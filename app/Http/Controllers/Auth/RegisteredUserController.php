@@ -53,6 +53,7 @@ class RegisteredUserController extends Controller
 
         return response()->json([
             "message" => "user has been created",
+            "token" => $token
         ], 200)->withCookie($cookie);
     }
 }
