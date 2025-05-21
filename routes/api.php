@@ -25,7 +25,7 @@ Route::middleware("guest:sanctum")->group(function () {
         ->name("login");
 
     Route::post("/forgot-password", [PasswordResetLinkController::class, "store"])
-        ->name("password.email");
+        ->name("password.reset");
 
     Route::post("/reset-password", [NewPassWordController::class, "store"])
         ->name("password.store");

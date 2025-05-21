@@ -45,7 +45,7 @@ class RegisteredUserController extends Controller
             60 * 24 * 7,         // Expiration: 7 days (in minutes)
             null,                // Path
             null,                // Domain
-            true,                // Secure (HTTPS only)
+            false,                // Secure (HTTPS only)
             true,                // HttpOnly
             false,               // Raw
             'Strict'             // SameSite
