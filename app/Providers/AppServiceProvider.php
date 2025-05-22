@@ -31,7 +31,7 @@ class AppServiceProvider extends ServiceProvider
                 ]
             );
 
-            return "http://localhost:5173/verify-email?url=" . urlencode($temporarySignedURL);
+            return "http://localhost:5174/verify-email?url=" . urlencode($temporarySignedURL);
         });
     }
 }

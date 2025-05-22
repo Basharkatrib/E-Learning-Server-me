@@ -25,34 +25,28 @@ class SessionController extends Controller
         // Create a new token
         $token = $user->createToken("auth_token")->plainTextToken;
 
-        // Set token cookie (secure, HTTP-only)
-        $cookie = Cookie(
-            'auth_token',        // Cookie name
-            $token,              // Value
-            60 * 24 * 7,         // Expiration: 7 days (in minutes)
-            null,                // Path
-            null,                // Domain
-            false,                // Secure (HTTPS only)
-            true,                // HttpOnly
-            false,               // Raw
-            'Strict'             // SameSite
-        );
-
         return response()->json([
             'message' => 'Login successful',
-        ])->withCookie($cookie);
+            "token" => $token,
+        ]);
     }
 
     public function destroy(Request $request): JsonResponse
     {
-        // Revoke the current access token
-        $request->user()?->currentAccessToken()?->delete();
+        if (!Auth::check()) {
+            return response()->json([
+                "message" =>  "Unauthorized",
+            ], 401);
+        }
 
-        // Forget the auth token cookie
-        $cookie = cookie()->forget('auth_token');
+        // Get the authenticated user
+        $user = $request->user(); // or Auth::user()
+
+        // Revoke all tokens (logout from all devices)
+        $user->currentAccessToken()->delete();
 
         return response()->json([
-            'message' => 'Logged out successfully',
-        ])->withCookie($cookie);
+            "message" => "Logged-out successfully"
+        ], 200);
     }
 }

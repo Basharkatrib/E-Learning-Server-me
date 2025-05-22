@@ -35,25 +35,8 @@ class RegisteredUserController extends Controller
         //This will triger the register event.
         event(new Registered($user));
 
-        //Here we will create the user's token.
-        $token = $user->createToken("auth_token")->plainTextToken;
-
-        //Set token cookie (secure, HTTP-only)
-        $cookie = Cookie(
-            'auth_token',        // Cookie name
-            $token,              // Value
-            60 * 24 * 7,         // Expiration: 7 days (in minutes)
-            null,                // Path
-            null,                // Domain
-            false,                // Secure (HTTPS only)
-            true,                // HttpOnly
-            false,               // Raw
-            'Strict'             // SameSite
-        );
-
         return response()->json([
             "message" => "user has been created",
-            "token" => $token
-        ], 200)->withCookie($cookie);
+        ], 200);
     }
 }
