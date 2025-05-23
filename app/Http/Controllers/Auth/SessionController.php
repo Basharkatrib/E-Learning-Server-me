@@ -26,11 +26,12 @@ class SessionController extends Controller
 
         return response()->json([
             'message' => 'Login successful',
-            "user" => [
-                "userName" => $user->name,
-                "email" => $user->email,
+            'user' => [
+                'UserId' => $user->id,
+                'userName' => $user->name,
+                'userEmail' => $user->email,
             ],
-            "token" => $token,
+            'token' => $token,
         ]);
     }
 
