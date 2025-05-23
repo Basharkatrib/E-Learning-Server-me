@@ -11,15 +11,19 @@ use App\Models\User;
 class VerifyEmailController extends Controller
 {
     /**
-     * Mark the authenticated user's email address as verified 
+     * Handle the email verification.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int|string  $id
+     * @param  string  $hash
+     * @return \Illuminate\Http\JsonResponse
      */
-
-    public function __invoke(Request $id, $hash): JsonResponse
+    public function __invoke(Request $request, $id, $hash): JsonResponse
     {
         $user = User::findOrFail($id);
 
         if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
-            return response()->json(['message' => 'Invalid hash'], 403);
+            return response()->json(['message' => 'Invalid hash.'], 403);
         }
 
         if ($user->hasVerifiedEmail()) {
