@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cookie;
 
 class SessionController extends Controller
 {
@@ -27,6 +26,10 @@ class SessionController extends Controller
 
         return response()->json([
             'message' => 'Login successful',
+            "user" => [
+                "userName" => $user->name,
+                "email" => $user->email,
+            ],
             "token" => $token,
         ]);
     }
