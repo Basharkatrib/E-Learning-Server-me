@@ -36,13 +36,17 @@ Route::middleware("auth:sanctum")->group(function () {
 
     Route::delete("/logout", [SessionController::class, "destroy"])
         ->name("logout");
-        
+
     Route::post("/email/verification-notification", [EmailVerificationNotificationController::class, "store"])
         ->middleware('throttle:6,1')
         ->name('verification.send');
+
+    Route::post("/resend-email-verification-link", [EmailVerificationNotificationController::class, "resend"])
+        ->middleware("throttle:6.1")
+        ->name("verification.link.resend");
 });
 
 // Email verification (signed URL + auth)
 Route::get("/verify-email/{id}/{hash}", [VerifyEmailController::class, "__invoke"])
-    ->middleware(["auth:sanctum", "signed", "throttle:6,1"])
+    ->middleware(["signed", "throttle:6,1"])
     ->name('verification.verify');
