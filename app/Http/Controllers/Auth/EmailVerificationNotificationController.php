@@ -30,13 +30,22 @@ class EmailVerificationNotificationController extends Controller
 
     public function resend(Request $request)
     {
-        if ($request->user()->hasVerifiedEmail()) {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found.'], 404);
+        }
+
+        if ($user->hasVerifiedEmail()) {
             return response()->json(['message' => 'Email already verified.'], 202);
         }
 
-        // Regenerate and send new verification link
-        $request->user()->sendEmailVerificationNotification();
+        $user->sendEmailVerificationNotification();
 
-        return response()->json(['message' => 'New verification link sent!'],202);
+        return response()->json(['message' => 'Verification link resent!'], 202);
     }
 }

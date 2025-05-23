@@ -41,10 +41,11 @@ Route::middleware("auth:sanctum")->group(function () {
         ->middleware('throttle:6,1')
         ->name('verification.send');
 
-    Route::post("/resend-email-verification-link", [EmailVerificationNotificationController::class, "resend"])
+});
+
+Route::post("/resend-email-verification-link", [EmailVerificationNotificationController::class, "resend"])
         ->middleware("throttle:6.1")
         ->name("verification.link.resend");
-});
 
 // Email verification (signed URL + auth)
 Route::get("/verify-email/{id}/{hash}", [VerifyEmailController::class, "__invoke"])
