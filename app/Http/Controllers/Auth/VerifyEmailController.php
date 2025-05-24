@@ -18,7 +18,7 @@ class VerifyEmailController extends Controller
      * @param  string  $hash
      * @return \Illuminate\Http\JsonResponse
      */
-    public function __invoke(Request $request, $id, $hash): JsonResponse
+    public function __invoke(Request $id, $hash): JsonResponse
     {
         $user = User::findOrFail($id);
 

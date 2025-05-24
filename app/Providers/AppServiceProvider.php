@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use Filament\Notifications\Auth\VerifyEmail;
+use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
@@ -36,9 +36,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         ResetPassword::createUrlUsing(function ($notifiable, $token) {
-        $frontendUrl = config('app.frontend_url', 'http://localhost:5174'); // fallback to localhost
+            $frontendUrl = config('app.frontend_url', 'http://localhost:5174'); // fallback to localhost
 
-        return "http://localhost:5174/reset-password?token={$token}&email=" . urlencode($notifiable->getEmailForPasswordReset());
-    });
+            return "http://localhost:5174/reset-password?token={$token}&email=" . urlencode($notifiable->getEmailForPasswordReset());
+        });
     }
 }
