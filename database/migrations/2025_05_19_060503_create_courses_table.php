@@ -16,8 +16,13 @@ return new class extends Migration
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
             $table->string("title");
+            $table->text('description')->nullable();
             $table->foreignIdFor(Category::class)->constrained()->onDelete("cascade");
             $table->foreignIdFor(User::class)->nullable()->constrained()->onDelete("set null");
+            $table->string('duration')->nullable();
+            $table->enum("difficulty_level", ["beginner", "intermediate", "advanced"]);
+            $table->string("thumbnail_url");
+            $table->string('default_language');
             $table->timestamps();
         });
     }

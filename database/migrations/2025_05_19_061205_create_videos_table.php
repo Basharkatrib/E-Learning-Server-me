@@ -16,6 +16,10 @@ return new class extends Migration
             $table->id();
             $table->string("title");
             $table->string("video_url");
+            $table->string('duration')->nullable();
+            $table->string('thumbnail_url')->nullable();
+            $table->boolean('is_preview')->default(false);
+            $table->integer('order')->default(0);
             $table->foreignIdFor(Section::class)->constrained()->onDelete("cascade");
             $table->timestamps();
         });
