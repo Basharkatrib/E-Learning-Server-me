@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\V1\CategoryController;
+use App\Http\Controllers\API\V1\CourseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\{
@@ -58,3 +59,5 @@ Route::get("/verify-email/{id}/{hash}", [VerifyEmailController::class, "__invoke
 Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], function () {
     Route::get("category", [CategoryController::class, "index"]);
 });
+
+Route::get('/v1/courses', [CourseController::class, 'index']);
