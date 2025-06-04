@@ -58,6 +58,7 @@ Route::get("/verify-email/{id}/{hash}", [VerifyEmailController::class, "__invoke
 
 Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], function () {
     Route::get("category", [CategoryController::class, "index"]);
+    Route::get("/category/{category}", [CategoryController::class, "show"]);
 });
 
 Route::get('/v1/courses', [CourseController::class, 'index']);
