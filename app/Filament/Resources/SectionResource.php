@@ -14,9 +14,11 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Tabs\Tab;
+use App\Filament\Traits\HasRoleBasedAccess;
 
 class SectionResource extends Resource
 {
+    use HasRoleBasedAccess;
     protected static ?string $model = Section::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-queue-list';

@@ -17,8 +17,14 @@ class CategoryResource extends JsonResource
         //return parent::toArray($request);
         return [
             'id' => $this->id,
-            'name' => $this->name,
-            'description' => $this->description,
+            "name" => [
+                "en" => $this->name,
+                "ar" => $this->getTranslation("name", "ar"),
+            ],
+            "description" => [
+                "en" => $this->description,
+                "ar" => $this->getTranslation("description", "ar"),
+            ],
             'parent_id' => $this->parent_id,
             'children' => CategoryResource::collection($this->whenLoaded('children')),
             'created_at' => $this->created_at->toDateTimeString(),
