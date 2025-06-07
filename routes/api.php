@@ -62,3 +62,13 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
 });
 
 Route::get('/v1/courses', [CourseController::class, 'index']);
+
+
+Route::middleware('auth:sanctum')->get('/notifications', function (Request $request) {
+    return $request->user()->unreadNotifications;
+});
+
+Route::middleware('auth:sanctum')->post('/notifications/read', function (Request $request) {
+    $request->user()->unreadNotifications->markAsRead();
+    return response()->noContent();
+});

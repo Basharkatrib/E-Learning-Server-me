@@ -19,6 +19,8 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-users';
 
+    protected static ?int $navigationSort = 8;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -30,11 +32,13 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('password')
+                    Forms\Components\TextInput::make('password')
                     ->password()
-                    ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+                    ->dehydrateStateUsing(fn (?string $state) => filled($state) ? Hash::make($state) : null)
+                    ->dehydrated(fn (?string $state) => filled($state))
                     ->required(fn (string $operation): bool => $operation === 'create')
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->nullable(),
                 Forms\Components\Select::make('role')
                     ->required()
                     ->options([
@@ -52,12 +56,12 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                // Tables\Columns\TextColumn::make('role')
-                //     ->badge()
-                //     ->color(fn (string $state): string => match ($state) {
-                //         'teacher' => 'success',
-                //         'student' => 'info',
-                //     }),
+                Tables\Columns\TextColumn::make('role')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'teacher' => 'success',
+                        'student' => 'info',
+                    }),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),

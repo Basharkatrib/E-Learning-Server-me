@@ -20,7 +20,9 @@ class CourseFaqResource extends Resource
     use HasRoleBasedAccess;
     protected static ?string $model = CourseFaq::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
+
+    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {
