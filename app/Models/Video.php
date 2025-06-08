@@ -3,8 +3,9 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-
+use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Model;
+
 
 class Video extends Model
 {
@@ -16,6 +17,8 @@ class Video extends Model
         "duration",
         "thumbnail_url",
     ];
+
+    public $translatable = ['title'];
 
     public function section(): BelongsTo
     {

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\V1\CategoryController;
+use App\Http\Controllers\API\V1\CourseController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\{
@@ -59,3 +60,5 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::get("category", [CategoryController::class, "index"]);
     Route::get("/category/{category}", [CategoryController::class, "show"]);
 });
+
+Route::get('/v1/courses', [CourseController::class, 'index']);
