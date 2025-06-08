@@ -23,6 +23,8 @@ class VideoResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-video-camera';
 
+    protected static ?int $navigationSort = 4;
+
     protected static ?string $navigationLabel = 'Videos';
 
     protected static ?string $modelLabel = 'Video';
@@ -58,11 +60,14 @@ class VideoResource extends Resource
                     ->preload()
                     ->live()
                     ->required(),
-                Forms\Components\TextInput::make('video_url')
-                    ->label('Video URL')
-                    ->required()
-                    ->url()
-                    ->maxLength(255),
+                Forms\Components\FileUpload::make('video_file')
+                    ->label('Video File')
+                    ->disk('cloudinary')
+                    ->visibility('public') 
+                    ->directory('videos')
+                    ->preserveFilenames()
+                    ->acceptedFileTypes(['video/mp4', 'video/quicktime', 'video/x-msvideo'])
+                    ->maxSize(102400),
                 Forms\Components\Select::make('section_id')
                     ->label('Section')
                     ->relationship('section', 'title', fn (\Illuminate\Database\Eloquent\Builder $query, Forms\Get $get) => $query->where('course_id', $get('course_id')))

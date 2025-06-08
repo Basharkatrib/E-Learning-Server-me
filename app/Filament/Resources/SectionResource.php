@@ -21,13 +21,15 @@ class SectionResource extends Resource
     use HasRoleBasedAccess;
     protected static ?string $model = Section::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-queue-list';
+    protected static ?string $navigationIcon = 'heroicon-o-bars-3';
 
     protected static ?string $navigationLabel = 'Sections';
 
     protected static ?string $modelLabel = 'Section';
 
     protected static ?string $pluralModelLabel = 'Sections';
+
+    protected static ?int $navigationSort = 3;
 
     public static function form(Form $form): Form
     {

@@ -18,6 +18,8 @@ class CourseResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
+    protected static ?int $navigationSort = 2;
+
     public static function form(Form $form): Form
     {
         return $form
@@ -63,8 +65,7 @@ class CourseResource extends Resource
                 Forms\Components\FileUpload::make('thumbnail_url')
                     ->label('Image')
                     ->image()
-                    ->directory('course-thumbnails')
-                    ->disk('public')
+                    ->disk('cloudinary')
                     ->visibility('public')
                     ->imageResizeMode('cover')
                     ->imageCropAspectRatio('16:9')
@@ -73,7 +74,9 @@ class CourseResource extends Resource
                     ->maxSize(5120) // 5MB
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/jpg'])
                     ->required()
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->preserveFilenames()
+                    ->directory('courses'),
                 Forms\Components\Select::make('default_language')
                     ->options([
                         'en' => 'English',
@@ -127,8 +130,9 @@ class CourseResource extends Resource
                 Tables\Columns\ImageColumn::make('thumbnail_url')
                     ->label('Image')
                     ->square()
-                    ->disk('public')
-                    ->visibility('public'),
+                    ->disk('cloudinary')
+                    ->visibility('public')
+                    ->columnSpanFull(),
                 Tables\Columns\TextColumn::make('default_language')
                     ->label('Default Language')
                     ->formatStateUsing(fn ($state) => match ($state) {
