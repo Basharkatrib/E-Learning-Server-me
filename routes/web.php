@@ -7,6 +7,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
 Route::get('/trigger', function () {
     $data = [
         'message' => 'Hii'

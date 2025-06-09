@@ -8,7 +8,7 @@ use Illuminate\Http\JsonResponse;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use Illuminate\Support\Facades\Storage;
 
 class RegisteredUserController extends Controller
 {
@@ -21,21 +21,30 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             "name" => ["required", "string", "max:255"],
-            "email" => ["required",  "email", "unique:users,email"],
-            "password" => ["required", "confirmed", Rules\Password::min(8)],
+            "email" => ["required", "email", "unique:users,email"],
+            "password" => ["required", "confirmed", "min:8"],
+            "certificate" => ["nullable", "file", "mimes:pdf,jpg,jpeg,png", "max:10240"],
         ]);
+
+        $certificateUrl = null;
+
+        if ($request->hasFile('certificate')) {
+            $path = $request->file('certificate')->store('certificates', 'cloudinary');
+            $certificateUrl = Storage::disk('cloudinary')->url($path);
+        }
 
         $user = User::create([
-            "name" => $request->name,
-            "email" => $request->email,
-            "password" => Hash::make($request->string("password")),
+            "name" => $request->input('name'),
+            "email" => $request->input('email'),
+            "password" => Hash::make($request->input('password')),
+            "certificate_url" => $certificateUrl,
         ]);
 
-        //This will triger the register event.
         event(new Registered($user));
 
         return response()->json([
-            "message" => "user has been created",
+            "message" => "User has been created",
+            "user" => $user
         ], 200);
     }
 }
