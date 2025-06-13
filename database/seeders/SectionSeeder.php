@@ -46,17 +46,24 @@ class SectionSeeder extends Seeder
             // Add templates for other categories...
         ];
 
+        $sectionsCreated = 0;
+        $maxSections = 30; // Limit total sections to 50
+
         foreach ($courses as $course) {
             $category = $course->category->parent->name;
             $sections = $sectionTemplates[$category] ?? $sectionTemplates["Development"]; // Default to Development template
             
             $order = 1;
             foreach ($sections as $section) {
+                if ($sectionsCreated >= $maxSections) {
+                    break 2; // Break both loops if max sections reached
+                }
                 Section::create([
                     "title" => $section["title"],
                     "course_id" => $course->id,
                     "order" => $order++
                 ]);
+                $sectionsCreated++;
             }
 
             // Add 1-3 bonus sections randomly
@@ -69,11 +76,15 @@ class SectionSeeder extends Seeder
 
             $randomBonus = collect($bonusSections)->random(rand(1, 3));
             foreach ($randomBonus as $bonus) {
+                if ($sectionsCreated >= $maxSections) {
+                    break 2; // Break both loops if max sections reached
+                }
                 Section::create([
                     "title" => $bonus["title"],
                     "course_id" => $course->id,
                     "order" => $order++
                 ]);
+                $sectionsCreated++;
             }
         }
     }

@@ -460,11 +460,17 @@ class CourseSeeder extends Seeder
             ],
         ];
 
+        $coursesCreated = 0;
+        $maxCourses = 10;
+
         foreach ($subCategories as $subcategory) {
 
             if (!isset($courseTemplates[$subcategory->name])) continue;
 
             foreach ($courseTemplates[$subcategory->name] as $template) {
+                if ($coursesCreated >= $maxCourses) {
+                    break 2; // Break both loops once 10 courses are created
+                }
                 Course::create([
                     "title" => $template["title"],
                     "description" => $this->generateCourseDescription($template["title"], $subcategory->name),
@@ -475,6 +481,7 @@ class CourseSeeder extends Seeder
                     "thumbnail_url" => $this->getThumbnailForCategory($subcategory->parent->name),
                     "default_language" => $this->getDefaultLanguage($subcategory->parent->name),
                 ]);
+                $coursesCreated++;
             }
         }
     }

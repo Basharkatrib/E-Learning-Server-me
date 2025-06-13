@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Auth\Events\Verified;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class VerifyEmailController extends Controller
 {
@@ -18,12 +19,12 @@ class VerifyEmailController extends Controller
      * @param  string  $hash
      * @return \Illuminate\Http\JsonResponse
      */
-    public function __invoke(Request $id, $hash): JsonResponse
+    public function __invoke(Request $request, $id, $hash)
     {
-        $user = User::findOrFail($id);
+        $user = \App\Models\User::findOrFail($id);
 
         if (! hash_equals((string) $hash, sha1($user->getEmailForVerification()))) {
-            return response()->json(['message' => 'Invalid hash.'], 403);
+            return response()->json(['message' => 'Invalid hash'], 403);
         }
 
         if ($user->hasVerifiedEmail()) {
@@ -31,7 +32,7 @@ class VerifyEmailController extends Controller
         }
 
         $user->markEmailAsVerified();
-        event(new Verified($user));
+        event(new \Illuminate\Auth\Events\Verified($user));
 
         return response()->json(['message' => 'Email verified successfully.'], 200);
     }
