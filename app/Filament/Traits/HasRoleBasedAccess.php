@@ -16,7 +16,7 @@ trait HasRoleBasedAccess
         }
 
         // Admin can see everything
-        if ($user->role !== 'teacher') {
+        if ($user->role == 'admin') {
             return true;
         }
 

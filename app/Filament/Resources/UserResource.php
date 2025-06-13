@@ -32,7 +32,15 @@ class UserResource extends Resource
                     ->email()
                     ->required()
                     ->maxLength(255),
-                    Forms\Components\TextInput::make('password')
+                Forms\Components\FileUpload::make('certificate_url')
+                    ->label('Certificate')
+                    ->directory('certificates')
+                    ->acceptedFileTypes(['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'])
+                    ->nullable()
+                    ->image()
+                    ->visibility('public')
+                    ->disk('cloudinary'),
+                Forms\Components\TextInput::make('password')
                     ->password()
                     ->dehydrateStateUsing(fn (?string $state) => filled($state) ? Hash::make($state) : null)
                     ->dehydrated(fn (?string $state) => filled($state))
@@ -44,6 +52,7 @@ class UserResource extends Resource
                     ->options([
                         'student' => 'Student',
                         'teacher' => 'Teacher',
+                        'admin' => 'Admin',
                     ]),
             ]);
     }
@@ -56,11 +65,14 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
+                Tables\Columns\ImageColumn::make('certificate_url')
+                    ->label('Certificate'),
                 Tables\Columns\TextColumn::make('role')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'teacher' => 'success',
                         'student' => 'info',
+                        'admin' => 'success',
                     }),
                 Tables\Columns\TextColumn::make('email_verified_at')
                     ->dateTime()
@@ -83,6 +95,12 @@ class UserResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('Certificate')
+                    ->label('Certificate')
+                    ->icon('heroicon-o-document-magnifying-glass')
+                    ->url(fn (\App\Models\User $record): ?string => $record->certificate_url)
+                    ->openUrlInNewTab()
+                    ->hidden(fn (\App\Models\User $record): bool => empty($record->certificate_url)),
                 Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([

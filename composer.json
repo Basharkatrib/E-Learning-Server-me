@@ -9,7 +9,6 @@
         "php": "^8.2",
         "cloudinary-labs/cloudinary-laravel": "^3.0",
         "filament/filament": "3.3",
-        "jrm2k6/cloudder": "*",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.10.1",
