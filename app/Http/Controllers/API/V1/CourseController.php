@@ -3,70 +3,142 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreCourseRequest;
+use App\Http\Requests\UpdateCourseRequest;
 use App\Models\Course;
+use App\Models\Skill;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CourseController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $req)
     {
-        return response()->json(Course::with('category')->get());
+        $query = Course::with(["category", "teacher", "skills"]);
+
+        //Filter by category if provided
+        if ($req->has("category_id")) {
+            $query->where("category_id", $req->category_id);
+        }
+
+        //Filter by difficulty_level if provided
+        if ($req->has("difficulty_level")) {
+            $query->where("difficulty_level", $req->category_id);
+        }
+
+        // Search by title if provided
+        if ($req->has("search")) {
+            $query->where("title", "like", "%" . $req->search . "%");
+        }
+
+        $courses = $query->paginate($request->per_page ?? 10);
+
+        return response()->json($courses);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCourseRequest $req)
     {
-        $user = $request->user();
-        if (!$user->isTeacher()) {
-            return response()->json([
-                "message" => "Only teachers can create courses!"
-            ], 403);
+        //only teachers can create courses
+        if (!Auth::user()->isTeacher) {
+            return response()->json(["message" => "Unauthorized"], 403);
         }
 
-        $vaildData = $request->validate([
-            "title" => ["required", "string"],
-            "description" => ["string", "nullable"],
-            "category_id" => ["required", "exists:categories,id"],
-        ]);
+        $course = new Course($req->validate());
+        $course->user_id = Auth::id();
 
-        $course = Course::create([
-            ...$vaildData,
-            "created_by" => $user->id,
-        ]);
+        //handel thumbnail upload if needed
+        if ($req->hasFile("thumbnail")) {
+            $path = $req->file("thumbnail")->store("thumbnails", "public");
+            $course->thumbnail_url = $path;
+        }
 
-        return response()->json([
-            "message" => "the course has been created successfully",
-            "course" => $course
-        ], 201);
+        $course->save();
+
+        //Attach skills if provided
+        if ($req->has("skills")) {
+            $skillIds = Skill::whereIn("name", $req->skills)
+                ->pluck("id")
+                ->toArray();
+            $course->skills()->sync($skillIds);
+        }
+
+        return response()->json($course, 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Course $course)
     {
-        $course = Course::with(['sections.videos'])->findOrFail($id);
+        $course->load(["category", "teacher", "skills", "sections.videos", "faqs", "ratings"]);
         return response()->json($course);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCourseRequest $req, Course $course)
     {
-        //
+        // Only the course owner or admin can update
+        if (Auth::id() !== $course->user_id && !Auth::user()->isAdmin) {
+            return response()->json(["message" => "Unauthorized"], 403);
+        }
+
+        $course->fill($req->validated());
+
+        // Handle thumbnail update if needed
+        if ($req->hasFile("thumbnail")) {
+            $path = $req->file("thumbnail")->store("thumbnails", "public");
+            $course->thumbnail_url = $path;
+        }
+
+        $course->save();
+
+        // Update skills if provided
+        if ($req->has("skills")) {
+            $skillIds = Skill::whereIn("name", $req->skills)
+                ->pluck("id")
+                ->toArray();
+            $course->skills()->sync($skillIds);
+        }
+
+        return response()->json($course);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Course $course)
     {
-        //
+        if (Auth::id() !== $course->user_id && !Auth::user()->isAdmin) {
+            return response()->json(["message" => "Unauthorized"], 403);
+        }
+
+        $course->delete();
+        return response()->json([
+            "message" => "course has been deleted"
+        ], 204);
+    }
+
+    /**
+     * Get courses created by the authenticated teacher.
+     */
+    public function myCourses()
+    {
+        if (!Auth::user()->isTeacher) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $courses = Course::where('user_id', Auth::id())
+            ->with(['category', 'skills'])
+            ->paginate(10);
+
+        return response()->json($courses);
     }
 }

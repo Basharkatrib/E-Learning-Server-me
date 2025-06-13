@@ -23,7 +23,7 @@ class Course extends Model
         "duration"
     ];
 
-    public $translatable = ['title', 'description'];
+    public $translatable = ["description", "title", "duration"];
 
     public function category(): BelongsTo
     {
@@ -32,7 +32,7 @@ class Course extends Model
 
     public function teacher(): BelongsTo
     {
-        return $this->belongsTo(User::class, "created_by");
+        return $this->belongsTo(User::class, "user_id");
     }
 
     public function sections(): HasMany
@@ -60,5 +60,12 @@ class Course extends Model
         return $this->belongsToMany(User::class, 'course_user')
             ->withPivot("enrolled_at")
             ->withTimestamps();
+    }
+
+    public function calculateTotalDuration()
+    {
+        return $this->sections->sum(function ($section) {
+            return $section->calculateDuration();
+        });
     }
 }

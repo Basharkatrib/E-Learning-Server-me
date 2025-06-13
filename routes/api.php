@@ -57,12 +57,10 @@ Route::get("/verify-email/{id}/{hash}", [VerifyEmailController::class, "__invoke
 //This routes made for category/courses/sections/videos
 
 Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], function () {
-    Route::get("category", [CategoryController::class, "index"]);
-    Route::get("/category/{category}", [CategoryController::class, "show"]);
+    Route::get("categories", [CategoryController::class, "index"]);
+    Route::get('/courses', [CourseController::class, 'index']);
+     Route::get('/courses/{course}', [CourseController::class, 'show']);
 });
-
-Route::get('/v1/courses', [CourseController::class, 'index']);
-
 
 Route::middleware('auth:sanctum')->get('/notifications', function (Request $request) {
     return $request->user()->unreadNotifications;
