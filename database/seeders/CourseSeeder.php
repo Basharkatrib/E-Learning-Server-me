@@ -527,7 +527,6 @@ class CourseSeeder extends Seeder
         }
 
         $languages = ["English", "Arabic"];
-        //return $this->fake->randomElement($languages);
         return $languages[array_rand($languages)];
     }
 }
