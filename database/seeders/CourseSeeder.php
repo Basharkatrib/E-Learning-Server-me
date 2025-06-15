@@ -25,437 +25,116 @@ class CourseSeeder extends Seeder
             //Development
             "Web Development" => [
                 [
-                    "title" => "Complete Web Developer Bootcamp",
+                    "title" => [
+                        "en" => "Complete Web Developer Bootcamp",
+                        "ar" => "دورة تطوير الويب الشاملة"
+                    ],
                     "duration" => "40 hours",
-                    "level" => "beginner"
+                    "level" => "beginner",
+                    "thumbnail" => "https://images.unsplash.com/photo-1585247226801-bc613c441316?q=80&w=1480&auto=format&fit=crop"
                 ],
                 [
-                    "title" => "Advanced JavaScript Patterns",
-                    "duration" => "15 hours",
-                    "level" => "advanced"
-                ],
-                [
-                    "title" => "React Masterclass",
+                    "title" => [
+                        "en" => "React Masterclass",
+                        "ar" => "دورة متقدمة في React"
+                    ],
                     "duration" => "25 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Node.js: From Zero to Hero",
-                    "duration" => "20 hours",
-                    "level" => "intermediate"
+                    "level" => "intermediate",
+                    "thumbnail" => "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1470&auto=format&fit=crop"
                 ],
             ],
             "Mobile Development" => [
                 [
-                    "title" => "Flutter Complete Guide",
+                    "title" => [
+                        "en" => "Flutter Complete Guide",
+                        "ar" => "دليل Flutter الشامل"
+                    ],
                     "duration" => "30 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Swift for Beginners",
-                    "duration" => "15 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Android Kotlin Development",
-                    "duration" => "25 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "React Native Advanced Concepts",
-                    "duration" => '18 hours',
-                    "level" => "advanced"
-                ],
-            ],
-            "Game Development" => [
-                [
-                    "title" => "Unity Game Development",
-                    "duration" => "35 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Unreal Engine 5 Fundamentals",
-                    "duration" => "20 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "C# for Game Programming",
-                    "duration" => "15 hours",
-                    "level" => "intermediate"
+                    "level" => "intermediate",
+                    "thumbnail" => "https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?q=80&w=1470&auto=format&fit=crop"
                 ],
             ],
             "Data Science" => [
                 [
-                    "title" => "Python for Data Science",
+                    "title" => [
+                        "en" => "Python for Data Science",
+                        "ar" => "بايثون لعلوم البيانات"
+                    ],
                     "duration" => "25 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Machine Learning A-Z",
-                    "duration" => "40 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Deep Learning with TensorFlow",
-                    "duration" => "30 hours",
-                    "level" => "advanced"
+                    "level" => "beginner",
+                    "thumbnail" => "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1470&auto=format&fit=crop"
                 ],
             ],
-
             // Business
             "Entrepreneurship" => [
                 [
-                    "title" => "Startup Fundamentals",
+                    "title" => [
+                        "en" => "Startup Fundamentals",
+                        "ar" => "أساسيات الشركات الناشئة"
+                    ],
                     "duration" => "10 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Business Model Innovation",
-                    "duration" => "12 hours",
-                    "level" => "intermediate"
+                    "level" => "beginner",
+                    "thumbnail" => "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1470&auto=format&fit=crop"
                 ],
             ],
-            "Finance" => [
-                [
-                    "title" => "Personal Finance Mastery",
-                    "duration" => "8 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Investment Strategies",
-                    "duration" => "15 hours",
-                    "level" => "intermediate"
-                ],
-            ],
-            "Management" => [
-                [
-                    "title" => "Leadership Skills",
-                    "duration" => "10 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Project Management Professional",
-                    "duration" => "35 hours",
-                    "level" => "advanced"
-                ],
-            ],
-
             // Design
             "Graphic Design" => [
                 [
-                    "title" => "Adobe Photoshop Masterclass",
+                    "title" => [
+                        "en" => "Adobe Photoshop Masterclass",
+                        "ar" => "دورة متقدمة في فوتوشوب"
+                    ],
                     "duration" => "20 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Logo Design Principles",
-                    "duration" => "8 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Illustrator for Beginners",
-                    "duration" => "15 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Advanced Typography",
-                    "duration" => "10 hours",
-                    "level" => "advanced"
-                ],
-            ],
-            "UX/UI" => [
-                [
-                    "title" => "User Experience Fundamentals",
-                    "duration" => "12 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Figma for UI Designers",
-                    "duration" => "15 hours",
-                    "level" => "intermediate"
-                ],
-            ],
-            "3D Modeling" => [
-                [
-                    "title" => "Blender 3D for Beginners",
-                    "duration" => "18 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Advanced Maya Techniques",
-                    "duration" => "25 hours",
-                    "level" => "advanced"
+                    "level" => "beginner",
+                    "thumbnail" => "https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=1470&auto=format&fit=crop"
                 ],
             ],
             // Marketing
             "Digital Marketing" => [
                 [
-                    "title" => "Digital Marketing Fundamentals",
+                    "title" => [
+                        "en" => "Digital Marketing Fundamentals",
+                        "ar" => "أساسيات التسويق الرقمي"
+                    ],
                     "duration" => "12 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Google Ads Complete Course",
-                    "duration" => "15 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Content Marketing Strategy",
-                    "duration" => "10 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Marketing Analytics",
-                    "duration" => "12 hours",
-                    "level" => "advanced"
+                    "level" => "beginner",
+                    "thumbnail" => "https://images.unsplash.com/photo-1557838923-2985c318be48?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 ],
             ],
-            "SEO" => [
-                [
-                    "title" => "SEO for Beginners",
-                    "duration" => "8 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Advanced SEO Techniques",
-                    "duration" => "12 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Technical SEO Mastery",
-                    "duration" => "10 hours",
-                    "level" => "advanced"
-                ],
-                [
-                    "title" => "Local SEO Strategies",
-                    "duration" => "6 hours",
-                    "level" => "intermediate"
-                ],
-            ],
-            "Social Media Marketing" => [
-                [
-                    "title" => "Instagram Marketing",
-                    "duration" => "8 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Facebook Ads Masterclass",
-                    "duration" => "12 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Social Media Strategy",
-                    "duration" => "10 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "TikTok Marketing",
-                    "duration" => "6 hours",
-                    "level" => "beginner"
-                ],
-            ],
-
             // IT & Software
             "Network Security" => [
                 [
-                    "title" => "Cybersecurity Fundamentals",
+                    "title" => [
+                        "en" => "Cybersecurity Fundamentals",
+                        "ar" => "أساسيات الأمن السيبراني"
+                    ],
                     "duration" => "15 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Ethical Hacking",
-                    "duration" => "25 hours",
-                    "level" => "advanced"
-                ],
-                [
-                    "title" => "Network Defense Strategies",
-                    "duration" => "18 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "CompTIA Security+ Prep",
-                    "duration" => "30 hours",
-                    "level" => "intermediate"
+                    "level" => "beginner",
+                    "thumbnail" => "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1470&auto=format&fit=crop"
                 ],
             ],
-            "Operating Systems" => [
-                [
-                    "title" => "Linux Command Line Basics",
-                    "duration" => "10 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Windows Server Administration",
-                    "duration" => "20 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "macOS Power User",
-                    "duration" => "8 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Advanced Linux Administration",
-                    "duration" => "25 hours",
-                    "level" => "advanced"
-                ],
-            ],
-            "Cloud Computing" => [
-                [
-                    "title" => "AWS Certified Cloud Practitioner",
-                    "duration" => "20 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Azure Fundamentals",
-                    "duration" => "15 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Google Cloud Platform Essentials",
-                    "duration" => "12 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "DevOps with Kubernetes",
-                    "duration" => "25 hours",
-                    "level" => "advanced"
-                ],
-            ],
-
             // Personal Development
             "Productivity" => [
                 [
-                    "title" => "Time Management Mastery",
+                    "title" => [
+                        "en" => "Time Management Mastery",
+                        "ar" => "إتقان إدارة الوقت"
+                    ],
                     "duration" => "6 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Getting Things Done (GTD)",
-                    "duration" => "8 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Deep Work Strategies",
-                    "duration" => "5 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Notion for Productivity",
-                    "duration" => "4 hours",
-                    "level" => "beginner"
+                    "level" => "beginner",
+                    "thumbnail" => "https://images.unsplash.com/photo-1694905472184-dcfab2382ced?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 ],
             ],
-            "Career Development" => [
-                [
-                    "title" => "Resume Writing Workshop",
-                    "duration" => "4 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Interview Success Strategies",
-                    "duration" => "6 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Networking for Professionals",
-                    "duration" => "5 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Executive Presence",
-                    "duration" => "8 hours",
-                    "level" => "advanced"
-                ],
-            ],
-            "Communication Skills" => [
-                [
-                    "title" => "Public Speaking Mastery",
-                    "duration" => "10 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Business Writing Skills",
-                    "duration" => "6 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Negotiation Techniques",
-                    "duration" => "8 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Active Listening Skills",
-                    "duration" => "4 hours",
-                    "level" => "beginner"
-                ],
-            ],
-
             // Language Learning
             "English" => [
                 [
-                    "title" => "English for Beginners",
+                    "title" => [
+                        "en" => "English for Beginners",
+                        "ar" => "الإنجليزية للمبتدئين"
+                    ],
                     "duration" => "30 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Business English",
-                    "duration" => "20 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "IELTS Preparation",
-                    "duration" => "25 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Advanced English Grammar",
-                    "duration" => "15 hours",
-                    "level" => "advanced"
-                ],
-            ],
-            "Spanish" => [
-                [
-                    "title" => "Spanish for Beginners",
-                    "duration" => "25 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Conversational Spanish",
-                    "duration" => "20 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Spanish for Travelers",
-                    "duration" => "10 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Advanced Spanish Grammar",
-                    "duration" => "15 hours",
-                    "level" => "advanced"
-                ],
-            ],
-            "Japanese" => [
-                [
-                    "title" => "Japanese for Beginners",
-                    "duration" => "30 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "JLPT N5 Preparation",
-                    "duration" => "25 hours",
-                    "level" => "beginner"
-                ],
-                [
-                    "title" => "Japanese Kanji Mastery",
-                    "duration" => "20 hours",
-                    "level" => "intermediate"
-                ],
-                [
-                    "title" => "Business Japanese",
-                    "duration" => "15 hours",
-                    "level" => "advanced"
+                    "level" => "beginner",
+                    "thumbnail" => "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=1471&auto=format&fit=crop"
                 ],
             ],
         ];
@@ -478,7 +157,7 @@ class CourseSeeder extends Seeder
                     "user_id" => $teachers->random()->id,
                     "duration" => $template["duration"],
                     "difficulty_level" => $template["level"],
-                    "thumbnail_url" => $this->getThumbnailForCategory($subcategory->parent->name),
+                    "thumbnail_url" => $template["thumbnail"],
                     "default_language" => $this->getDefaultLanguage($subcategory->parent->name),
                 ]);
                 $coursesCreated++;
@@ -489,41 +168,45 @@ class CourseSeeder extends Seeder
     private function generateCourseDescription($title, $category)
     {
         $phrases = [
-            "This comprehensive course will teach you everything you need to know about $title.",
-            "Master the concepts with hands-on projects and real-world examples.",
-            "Perfect for beginners looking to break into $category.",
-            "Take your $category skills to the next level with this in-depth course.",
-            "Includes downloadable resources, exercises, and practical assignments.",
-            "Get certified upon completion and add this valuable skill to your resume.",
-            "Join thousands of satisfied students who have transformed their careers.",
-            "Taught by industry experts with years of practical experience.",
-            "Lifetime access to course materials and future updates.",
-            "30-day money-back guarantee if you're not completely satisfied."
+            "en" => [
+                "This comprehensive course will teach you everything you need to know about {$title['en']}.",
+                "Master the concepts with hands-on projects and real-world examples.",
+                "Perfect for beginners looking to break into $category.",
+                "Take your $category skills to the next level with this in-depth course.",
+                "Includes downloadable resources, exercises, and practical assignments.",
+                "Get certified upon completion and add this valuable skill to your resume.",
+                "Join thousands of satisfied students who have transformed their careers.",
+                "Taught by industry experts with years of practical experience.",
+                "Lifetime access to course materials and future updates.",
+                "30-day money-back guarantee if you're not completely satisfied."
+            ],
+            "ar" => [
+                "ستعلمك هذه الدورة الشاملة كل ما تحتاج معرفته عن {$title['ar']}.",
+                "أتقن المفاهيم من خلال المشاريع العملية والأمثلة الواقعية.",
+                "مثالية للمبتدئين الذين يتطلعون إلى الدخول في مجال $category.",
+                "ارتقِ بمهاراتك في $category إلى المستوى التالي مع هذه الدورة المتعمقة.",
+                "تشمل موارد قابلة للتحميل وتمارين ومهام عملية.",
+                "احصل على شهادة عند الانتهاء وأضف هذه المهارة القيمة إلى سيرتك الذاتية.",
+                "انضم إلى آلاف الطلاب الراضين الذين غيروا مسار حياتهم المهنية.",
+                "يتم تدريسها من قبل خبراء الصناعة ذوي الخبرة العملية.",
+                "وصول مدى الحياة إلى مواد الدورة والتحديثات المستقبلية.",
+                "ضمان استرداد الأموال خلال 30 يومًا إذا لم تكن راضيًا تمامًا."
+            ]
         ];
 
-        shuffle($phrases);
-        return implode(' ', array_slice($phrases, 0, 4));
-    }
+        $description = [];
+        foreach (['en', 'ar'] as $lang) {
+            shuffle($phrases[$lang]);
+            $description[$lang] = implode(' ', array_slice($phrases[$lang], 0, 4));
+        }
 
-    private function getThumbnailForCategory($parentCategory)
-    {
-        $thumbnails = [
-            "Development" => 'https://source.unsplash.com/random/800x600/?programming',
-            "Business" => 'https://source.unsplash.com/random/800x600/?business',
-            "Design" => 'https://source.unsplash.com/random/800x600/?design',
-            "Marketing" => 'https://source.unsplash.com/random/800x600/?marketing',
-            "IT & Software" => 'https://source.unsplash.com/random/800x600/?technology',
-            "Personal Development" => 'https://source.unsplash.com/random/800x600/?success',
-            "Language Learning" => 'https://source.unsplash.com/random/800x600/?language',
-        ];
-
-        return $thumbnails[$parentCategory] ?? 'https://source.unsplash.com/random/800x600/?education';
+        return $description;
     }
 
     private function getDefaultLanguage($parentCategory)
     {
         if ($parentCategory === "Language Learning") {
-            return "English"; // Base language for teaching other languages
+            return "English";
         }
 
         $languages = ["English", "Arabic"];
