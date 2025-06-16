@@ -23,25 +23,70 @@ class SectionSeeder extends Seeder
 
         $sectionTemplates = [
             "Development" => [
-                ["title" => "Introduction and Setup"],
-                ["title" => "Core Concepts"],
-                ["title" => "Advanced Topics"],
-                ["title" => "Practical Projects"],
-                ["title" => "Deployment and Next Steps"]
+                ["title" => [
+                    "en" => "Introduction and Setup",
+                    "ar" => "المقدمة والإعداد"
+                ]],
+                ["title" => [
+                    "en" => "Core Concepts",
+                    "ar" => "المفاهيم الأساسية"
+                ]],
+                ["title" => [
+                    "en" => "Advanced Topics",
+                    "ar" => "المواضيع المتقدمة"
+                ]],
+                ["title" => [
+                    "en" => "Practical Projects",
+                    "ar" => "المشاريع العملية"
+                ]],
+                ["title" => [
+                    "en" => "Deployment and Next Steps",
+                    "ar" => "النشر والخطوات التالية"
+                ]]
             ],
             "Business" => [
-                ["title" => "Course Overview"],
-                ["title" => "Fundamental Principles"],
-                ["title" => "Case Studies"],
-                ["title" => "Implementation Strategies"],
-                ["title" => "Final Assessment"]
+                ["title" => [
+                    "en" => "Course Overview",
+                    "ar" => "نظرة عامة على الدورة"
+                ]],
+                ["title" => [
+                    "en" => "Fundamental Principles",
+                    "ar" => "المبادئ الأساسية"
+                ]],
+                ["title" => [
+                    "en" => "Case Studies",
+                    "ar" => "دراسات الحالة"
+                ]],
+                ["title" => [
+                    "en" => "Implementation Strategies",
+                    "ar" => "استراتيجيات التنفيذ"
+                ]],
+                ["title" => [
+                    "en" => "Final Assessment",
+                    "ar" => "التقييم النهائي"
+                ]]
             ],
             "Design" => [
-                ["title" => "Getting Started"],
-                ["title" => "Design Fundamentals"],
-                ["title" => "Tools and Techniques"],
-                ["title" => "Project Workshop"],
-                ["title" => "Portfolio Presentation"]
+                ["title" => [
+                    "en" => "Getting Started",
+                    "ar" => "البدء"
+                ]],
+                ["title" => [
+                    "en" => "Design Fundamentals",
+                    "ar" => "أساسيات التصميم"
+                ]],
+                ["title" => [
+                    "en" => "Tools and Techniques",
+                    "ar" => "الأدوات والتقنيات"
+                ]],
+                ["title" => [
+                    "en" => "Project Workshop",
+                    "ar" => "ورشة المشروع"
+                ]],
+                ["title" => [
+                    "en" => "Portfolio Presentation",
+                    "ar" => "عرض المحفظة"
+                ]]
             ],
             // Add templates for other categories...
         ];
@@ -68,10 +113,22 @@ class SectionSeeder extends Seeder
 
             // Add 1-3 bonus sections randomly
             $bonusSections = [
-                ["title" => "Bonus Content"],
-                ["title" => "Additional Resources"],
-                ["title" => "Q&A Sessions"],
-                ["title" => "Interview Preparation"]
+                ["title" => [
+                    "en" => "Bonus Content",
+                    "ar" => "محتوى إضافي"
+                ]],
+                ["title" => [
+                    "en" => "Additional Resources",
+                    "ar" => "موارد إضافية"
+                ]],
+                ["title" => [
+                    "en" => "Q&A Sessions",
+                    "ar" => "جلسات الأسئلة والأجوبة"
+                ]],
+                ["title" => [
+                    "en" => "Interview Preparation",
+                    "ar" => "التحضير للمقابلات"
+                ]]
             ];
 
             $randomBonus = collect($bonusSections)->random(rand(1, 3));

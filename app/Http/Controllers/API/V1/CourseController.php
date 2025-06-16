@@ -76,7 +76,7 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
-        $course->load(["category", "teacher", "skills", "sections.videos", "faqs", "ratings"]);
+        $course->load(["category", "teacher", "skills", "sections.videos", "faqs", "ratings", "benefits"]);
         return response()->json($course);
     }
 
@@ -136,7 +136,7 @@ class CourseController extends Controller
         }
 
         $courses = Course::where('user_id', Auth::id())
-            ->with(['category', 'skills'])
+            ->with(['category', 'skills', 'benefits'])
             ->paginate(10);
 
         return response()->json($courses);

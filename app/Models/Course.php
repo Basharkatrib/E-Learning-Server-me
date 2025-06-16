@@ -68,4 +68,12 @@ class Course extends Model
             return $section->calculateDuration();
         });
     }
+
+    /**
+     * Get the benefits for the course.
+     */
+    public function benefits()
+    {
+        return $this->hasMany(BenefitsCourse::class)->orderBy('order');
+    }
 }

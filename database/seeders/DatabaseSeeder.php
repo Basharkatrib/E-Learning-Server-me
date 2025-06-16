@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             FAQsSeeder::class,
             RatingSeeder::class,
             SectionSeeder::class,
+            BenefitsCourseSeeder::class,
         ]);
     }
 }

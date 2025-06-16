@@ -29,7 +29,10 @@ class CourseSeeder extends Seeder
                         "en" => "Complete Web Developer Bootcamp",
                         "ar" => "دورة تطوير الويب الشاملة"
                     ],
-                    "duration" => "40 hours",
+                    "duration" => [
+                        "en" => "40 hours",
+                        "ar" => "40 ساعة"
+                    ],
                     "level" => "beginner",
                     "thumbnail" => "https://images.unsplash.com/photo-1585247226801-bc613c441316?q=80&w=1480&auto=format&fit=crop"
                 ],
@@ -38,7 +41,10 @@ class CourseSeeder extends Seeder
                         "en" => "React Masterclass",
                         "ar" => "دورة متقدمة في React"
                     ],
-                    "duration" => "25 hours",
+                    "duration" => [
+                        "en" => "25 hours",
+                        "ar" => "25 ساعة"
+                    ],
                     "level" => "intermediate",
                     "thumbnail" => "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1470&auto=format&fit=crop"
                 ],
@@ -49,7 +55,10 @@ class CourseSeeder extends Seeder
                         "en" => "Flutter Complete Guide",
                         "ar" => "دليل Flutter الشامل"
                     ],
-                    "duration" => "30 hours",
+                    "duration" => [
+                        "en" => "30 hours",
+                        "ar" => "30 ساعة"
+                    ],
                     "level" => "intermediate",
                     "thumbnail" => "https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?q=80&w=1470&auto=format&fit=crop"
                 ],
@@ -60,7 +69,10 @@ class CourseSeeder extends Seeder
                         "en" => "Python for Data Science",
                         "ar" => "بايثون لعلوم البيانات"
                     ],
-                    "duration" => "25 hours",
+                    "duration" => [
+                        "en" => "25 hours",
+                        "ar" => "25 ساعة"
+                    ],
                     "level" => "beginner",
                     "thumbnail" => "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1470&auto=format&fit=crop"
                 ],
@@ -72,7 +84,10 @@ class CourseSeeder extends Seeder
                         "en" => "Startup Fundamentals",
                         "ar" => "أساسيات الشركات الناشئة"
                     ],
-                    "duration" => "10 hours",
+                    "duration" => [
+                        "en" => "10 hours",
+                        "ar" => "10 ساعات"
+                    ],
                     "level" => "beginner",
                     "thumbnail" => "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1470&auto=format&fit=crop"
                 ],
@@ -84,7 +99,10 @@ class CourseSeeder extends Seeder
                         "en" => "Adobe Photoshop Masterclass",
                         "ar" => "دورة متقدمة في فوتوشوب"
                     ],
-                    "duration" => "20 hours",
+                    "duration" => [
+                        "en" => "20 hours",
+                        "ar" => "20 ساعة"
+                    ],
                     "level" => "beginner",
                     "thumbnail" => "https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=1470&auto=format&fit=crop"
                 ],
@@ -96,7 +114,10 @@ class CourseSeeder extends Seeder
                         "en" => "Digital Marketing Fundamentals",
                         "ar" => "أساسيات التسويق الرقمي"
                     ],
-                    "duration" => "12 hours",
+                    "duration" => [
+                        "en" => "12 hours",
+                        "ar" => "12 ساعة"
+                    ],
                     "level" => "beginner",
                     "thumbnail" => "https://images.unsplash.com/photo-1557838923-2985c318be48?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 ],
@@ -108,7 +129,10 @@ class CourseSeeder extends Seeder
                         "en" => "Cybersecurity Fundamentals",
                         "ar" => "أساسيات الأمن السيبراني"
                     ],
-                    "duration" => "15 hours",
+                    "duration" => [
+                        "en" => "15 hours",
+                        "ar" => "15 ساعة"
+                    ],
                     "level" => "beginner",
                     "thumbnail" => "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1470&auto=format&fit=crop"
                 ],
@@ -120,7 +144,10 @@ class CourseSeeder extends Seeder
                         "en" => "Time Management Mastery",
                         "ar" => "إتقان إدارة الوقت"
                     ],
-                    "duration" => "6 hours",
+                    "duration" => [
+                        "en" => "6 hours",
+                        "ar" => "6 ساعات"
+                    ],
                     "level" => "beginner",
                     "thumbnail" => "https://images.unsplash.com/photo-1694905472184-dcfab2382ced?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
                 ],
@@ -132,7 +159,10 @@ class CourseSeeder extends Seeder
                         "en" => "English for Beginners",
                         "ar" => "الإنجليزية للمبتدئين"
                     ],
-                    "duration" => "30 hours",
+                    "duration" => [
+                        "en" => "30 hours",
+                        "ar" => "30 ساعة"
+                    ],
                     "level" => "beginner",
                     "thumbnail" => "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=1471&auto=format&fit=crop"
                 ],
