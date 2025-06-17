@@ -26,7 +26,7 @@ class CourseController extends Controller
 
         //Filter by difficulty_level if provided
         if ($req->has("difficulty_level")) {
-            $query->where("difficulty_level", $req->category_id);
+            $query->where("difficulty_level", $req->difficulty_level);
         }
 
         // Search by title if provided
