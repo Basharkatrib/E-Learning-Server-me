@@ -40,5 +40,9 @@ class AppServiceProvider extends ServiceProvider
 
             return "http://localhost:5174/reset-password?token={$token}&email=" . urlencode($notifiable->getEmailForPasswordReset());
         });
+
+        if (env('APP_ENV') === 'production') {
+            URL::forceScheme('https');
+        }
     }
 }
