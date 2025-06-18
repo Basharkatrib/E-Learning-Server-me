@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             RatingSeeder::class,
             SectionSeeder::class,
             BenefitsCourseSeeder::class,
+            VideosSeeder::class,
         ]);
     }
 }
