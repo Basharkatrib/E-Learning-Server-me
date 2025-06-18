@@ -4,7 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\CourseFaqResource\Pages;
 use App\Filament\Resources\CourseFaqResource\RelationManagers;
-use App\Models\CourseFaq;
+use App\Models\CourseFAQ;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -18,7 +18,7 @@ use App\Filament\Traits\HasRoleBasedAccess;
 class CourseFaqResource extends Resource
 {
     use HasRoleBasedAccess;
-    protected static ?string $model = CourseFaq::class;
+    protected static ?string $model = CourseFAQ::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
 
