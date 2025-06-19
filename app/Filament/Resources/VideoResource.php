@@ -60,14 +60,11 @@ class VideoResource extends Resource
                     ->preload()
                     ->live()
                     ->required(),
-                Forms\Components\FileUpload::make('video_file')
-                    ->label('Video File')
-                    ->disk('cloudinary')
-                    ->visibility('public') 
-                    ->directory('videos')
-                    ->preserveFilenames()
-                    ->acceptedFileTypes(['video/mp4', 'video/quicktime', 'video/x-msvideo'])
-                    ->maxSize(102400),
+                    Forms\Components\TextInput::make('video_url')
+                    ->label('Video URL')
+                    ->url()
+                    ->nullable()
+                    ->maxLength(255),
                 Forms\Components\Select::make('section_id')
                     ->label('Section')
                     ->relationship('section', 'title', fn (\Illuminate\Database\Eloquent\Builder $query, Forms\Get $get) => $query->where('course_id', $get('course_id')))
@@ -136,6 +133,8 @@ class VideoResource extends Resource
                     ->suffix(' mins')
                     ->numeric()
                     ->sortable(),
+                    Tables\Columns\TextColumn::make('video_url')
+                    ->label('Vedio Url'),
                 Tables\Columns\ImageColumn::make('thumbnail_url')
                     ->label('Thumbnail')
                     ->square()

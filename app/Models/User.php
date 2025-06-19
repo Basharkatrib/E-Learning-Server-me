@@ -62,6 +62,11 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(Course::class, "created_by");
     }
 
+    public function enrolledCourses()
+    {
+        return $this->courses();
+    }
+
     public function isAdmin()
     {
         return $this->role === 'admin';
