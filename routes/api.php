@@ -1,7 +1,10 @@
 <?php
 
-use App\Http\Controllers\API\V1\CategoryController;
-use App\Http\Controllers\API\V1\CourseController;
+use App\Http\Controllers\API\V1\{
+    CategoryController,
+    CourseController,
+    EnrollmentController
+};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\{
@@ -59,7 +62,13 @@ Route::get("/verify-email/{id}/{hash}", [VerifyEmailController::class, "__invoke
 Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], function () {
     Route::get("categories", [CategoryController::class, "index"]);
     Route::get('/courses', [CourseController::class, 'index']);
-     Route::get('/courses/{course}', [CourseController::class, 'show']);
+    Route::get('/courses/{course}', [CourseController::class, 'show']);
+
+    //enrollments routes
+    Route::post("/courses/{course}/enroll", [EnrollmentController::class, "enroll"])->middleware("auth:sanctum");
+    Route::delete("/courses/{course}/unenroll", [EnrollmentController::class, "unenroll"])->middleware("auth:sanctum");
+    Route::get("/courses/{course}/enrollments", [EnrollmentController::class, "enrolledUsers"])->middleware("auth:sanctum");
+    Route::get("/users/{user}/enrollments", [EnrollmentController::class, "userEnrollments"])->middleware("auth:sanctum");
 });
 
 Route::middleware('auth:sanctum')->get('/notifications', function (Request $request) {
