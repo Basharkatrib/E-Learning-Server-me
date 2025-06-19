@@ -21,7 +21,6 @@ class VideosSeeder extends Seeder
             $sections = Section::all();
         }
 
-        // روابط يوتيوب حقيقية ومتنوعة
         $youtubeVideos = [
             "dQw4w9WgXcQ", // Rick Astley - Never Gonna Give You Up
             "9bZkp7q19f0", // PSY - GANGNAM STYLE
@@ -128,7 +127,7 @@ class VideosSeeder extends Seeder
                 
                 Video::create([
                     "title" => $video["title"],
-                    "video_url" => "https://www.youtube.com/watch?v=" . $youtubeId,
+                    "video_url" => "https://www.youtube.com/embed/" . $youtubeId,
                     "duration" => $video["duration"],
                     "is_preview" => $video["is_preview"],
                     "order" => $order++,
