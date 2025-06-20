@@ -69,6 +69,8 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::delete("/courses/{course}/unenroll", [EnrollmentController::class, "unenroll"])->middleware("auth:sanctum");
     Route::get("/courses/{course}/enrollments", [EnrollmentController::class, "enrolledUsers"])->middleware("auth:sanctum");
     Route::get("/users/{user}/enrollments", [EnrollmentController::class, "userEnrollments"])->middleware("auth:sanctum");
+    Route::post('/enrollment/check', [EnrollmentController::class, 'isEnrolled'])->middleware("auth:sanctum");
+
 });
 
 Route::middleware('auth:sanctum')->get('/notifications', function (Request $request) {
@@ -79,3 +81,8 @@ Route::middleware('auth:sanctum')->post('/notifications/read', function (Request
     $request->user()->unreadNotifications->markAsRead();
     return response()->noContent();
 });
+
+
+
+
+

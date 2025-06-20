@@ -28,7 +28,7 @@ class EnrollmentController extends Controller
             return response()->json(["message" => "Only students can enroll"], 403);
         }
 
-        if ($user->courses->where("course_id", $course->id)->isNotEmpty()) {
+        if ($user->courses()->where("course_id", $course->id)->exists()) {
             return response()->json(["message" => "User is already enrolled in this course"], 409);
         }
 
@@ -147,5 +147,38 @@ class EnrollmentController extends Controller
                 ];
             }),
         ]);
+    }
+
+    public function isEnrolled(Request $request)
+    {
+        $userId = $request->input('user_id');
+        $courseId = $request->input('course_id');
+
+        if (!$userId || !$courseId) {
+            return response()->json(['message' => 'user_id and course_id are required'], 422);
+        }
+
+        $user = User::find($userId);
+        $course = Course::find($courseId);
+
+        if (!$user || !$course) {
+            return response()->json(['message' => 'User or Course not found'], 404);
+        }
+
+        $isEnrolled = $user->courses()->where('course_id', $courseId)->exists();
+
+        if ($isEnrolled) {
+            return response()->json([
+                'userId' => $userId,
+                'courseId' => $courseId,
+                'isEnrolled' => true,
+            ], 200);
+        } else {
+            return response()->json([
+                'userId' => $userId,
+                'courseId' => $courseId,
+                'isEnrolled' => false,
+            ], 409);
+        }
     }
 }
