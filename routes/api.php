@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\{
     RegisteredUserController,
+    RegisterUserFromPhoneController,
     EmailVerificationNotificationController,
     NewPassWordController,
     PasswordResetLinkController,
@@ -26,6 +27,8 @@ Route::get('/user', function (Request $request) {
 Route::middleware("guest:sanctum")->group(function () {
     Route::post("/register", [RegisteredUserController::class, "store"])
         ->name("register");
+
+    Route::post("/phone-register", [RegisterUserFromPhoneController::class, "store"]);
 
     Route::post("/login", [SessionController::class, "store"])
         ->name("login");
@@ -56,6 +59,8 @@ Route::post("/resend-email-verification-link", [EmailVerificationNotificationCon
 Route::get("/verify-email/{id}/{hash}", [VerifyEmailController::class, "__invoke"])
     ->middleware(["signed", "throttle:6,1"])
     ->name('verification.verify');
+
+Route::post("/verify-otp", [RegisterUserFromPhoneController::class, "verifyOtp"]);
 
 //This routes made for category/courses/sections/videos
 
