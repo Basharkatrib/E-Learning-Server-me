@@ -58,8 +58,7 @@ class VideoResource extends Resource
                     ->relationship('section.course', 'title')
                     ->searchable()
                     ->preload()
-                    ->live()
-                    ->required(),
+                    ->live(),
                     Forms\Components\TextInput::make('video_url')
                     ->label('Video URL')
                     ->url()

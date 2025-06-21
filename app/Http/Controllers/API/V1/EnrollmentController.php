@@ -80,8 +80,8 @@ class EnrollmentController extends Controller
      */
     public function enrolledUsers(Request $req, Course $course)
     {
-        //only teacher of the course and admins can see enrolled users
-        if (Auth::user()->role !== "admin" || $course->user_id !== Auth::id()) {
+        
+        if (!Auth::check()) {
             return response()->json(["message" => "Unauthorized"], 403);
         }
 
@@ -89,22 +89,22 @@ class EnrollmentController extends Controller
             ->when($req->has("search"), function ($query) use ($req) {
                 $query->where("name", "like", "%" . $req->search . "%")
                     ->orWhere("email", "like", "%" . $req->search . "%");
-            });
+            })
+            ->get();
 
         return response()->json([
-            "data" => $users->map(
-                function ($user) {
-                    return [
-                        "id" => $user->id,
-                        "name" => $user->name,
-                        "email" => $user->email,
-                        "role" => $user->role,
-                        "enrolledAt" => $user->pivot->enrolled_at,
-                    ];
-                }
-            ),
+            "data" => $users->map(function ($user) {
+                return [
+                    "id" => $user->id,
+                    "name" => $user->name,
+                    "email" => $user->email,
+                    "role" => $user->role,
+                    "enrolledAt" => $user->pivot->enrolled_at,
+                ];
+            }),
         ]);
     }
+
 
     /**
      * Get all courses a user is enrolled in
