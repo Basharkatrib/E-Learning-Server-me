@@ -135,14 +135,23 @@ class EnrollmentController extends Controller
             "data" => $courses->map(function ($course) {
                 return [
                     "courseId" => $course->id,
-                    "courseTitle" => $course->title,
-                    "courseDescription" => $course->description,
+                    "courseTitle" => [
+                        "en" => $course->getTranslation('title', 'en'),
+                        "ar" => $course->getTranslation('title', 'ar')
+                    ],
+                    "courseDescription" => [
+                        "en" => $course->getTranslation('description', 'en'),
+                        "ar" => $course->getTranslation('description', 'ar')
+                    ],
                     "courseThumbnailUrl" => $course->thumbnail_url,
                     "instructor" => [
                         "instructorId" => $course->teacher->id,
                         "instructorName" => $course->teacher->name,
                     ],
-                    "categoryName" => $course->category->name,
+                    "categoryName" => [
+                        "en" => $course->category->getTranslation('name', 'en'),
+                        "ar" => $course->category->getTranslation('name', 'ar')
+                    ],
                     "userEnrolledAt" => $course->pivot->enrolled_at,
                 ];
             }),
