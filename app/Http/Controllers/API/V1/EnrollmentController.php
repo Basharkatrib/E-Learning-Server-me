@@ -28,7 +28,7 @@ class EnrollmentController extends Controller
             return response()->json(["message" => "Only students can enroll"], 403);
         }
 
-        if ($user->courses->where("course_id", $course->id)->isNotEmpty()) {
+        if ($user->courses()->where("course_id", $course->id)->exists()) {
             return response()->json(["message" => "User is already enrolled in this course"], 409);
         }
 

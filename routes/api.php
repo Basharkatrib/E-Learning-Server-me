@@ -3,7 +3,8 @@
 use App\Http\Controllers\API\V1\{
     CategoryController,
     CourseController,
-    EnrollmentController
+    EnrollmentController,
+    RatingController
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Auth\{
     SessionController,
     VerifyEmailController,
 };
+use Illuminate\Support\Facades\DB;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -74,6 +76,12 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::delete("/courses/{course}/unenroll", [EnrollmentController::class, "unenroll"])->middleware("auth:sanctum");
     Route::get("/courses/{course}/enrollments", [EnrollmentController::class, "enrolledUsers"])->middleware("auth:sanctum");
     Route::get("/users/{user}/enrollments", [EnrollmentController::class, "userEnrollments"])->middleware("auth:sanctum");
+
+    //ratings
+    Route::post("/courses/{course}/ratings", [RatingController::class, "store"])->middleware("auth:sanctum");
+    Route::put("/ratings/{rating}", [RatingController::class, "update"])->middleware("auth:sanctum");
+    Route::delete("/ratings/{rating}", [RatingController::class, "destroy"])->middleware("auth:sanctum");
+
 });
 
 Route::middleware('auth:sanctum')->get('/notifications', function (Request $request) {
