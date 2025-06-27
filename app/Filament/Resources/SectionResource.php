@@ -75,11 +75,16 @@ class SectionResource extends Resource
                     ->label('Title')
                     ->searchable()
                     ->sortable(),
-                    
                 Tables\Columns\TextColumn::make('course.title')
                     ->label('Course')
-                    ->searchable()
-                    ->sortable(),
+                    ->formatStateUsing(function ($state) {
+                        if (is_array($state)) {
+                            return $state[app()->getLocale()] ?? $state['en'] ?? '';
+                        }
+                        return $state;
+                    })
+                    ->sortable()
+                    ->searchable(),                
                 Tables\Columns\TextColumn::make('order')
                     ->label('Order')
                     ->numeric()

@@ -80,8 +80,8 @@ class EnrollmentController extends Controller
      */
     public function enrolledUsers(Request $req, Course $course)
     {
-        //only teacher of the course and admins can see enrolled users
-        if (Auth::user()->role !== "admin" || $course->user_id !== Auth::id()) {
+        
+        if (!Auth::check()) {
             return response()->json(["message" => "Unauthorized"], 403);
         }
 
@@ -89,22 +89,22 @@ class EnrollmentController extends Controller
             ->when($req->has("search"), function ($query) use ($req) {
                 $query->where("name", "like", "%" . $req->search . "%")
                     ->orWhere("email", "like", "%" . $req->search . "%");
-            });
+            })
+            ->get();
 
         return response()->json([
-            "data" => $users->map(
-                function ($user) {
-                    return [
-                        "id" => $user->id,
-                        "name" => $user->name,
-                        "email" => $user->email,
-                        "role" => $user->role,
-                        "enrolledAt" => $user->pivot->enrolled_at,
-                    ];
-                }
-            ),
+            "data" => $users->map(function ($user) {
+                return [
+                    "id" => $user->id,
+                    "name" => $user->name,
+                    "email" => $user->email,
+                    "role" => $user->role,
+                    "enrolledAt" => $user->pivot->enrolled_at,
+                ];
+            }),
         ]);
     }
+
 
     /**
      * Get all courses a user is enrolled in
@@ -135,17 +135,59 @@ class EnrollmentController extends Controller
             "data" => $courses->map(function ($course) {
                 return [
                     "courseId" => $course->id,
-                    "courseTitle" => $course->title,
-                    "courseDescription" => $course->description,
+                    "courseTitle" => [
+                        "en" => $course->getTranslation('title', 'en'),
+                        "ar" => $course->getTranslation('title', 'ar')
+                    ],
+                    "courseDescription" => [
+                        "en" => $course->getTranslation('description', 'en'),
+                        "ar" => $course->getTranslation('description', 'ar')
+                    ],
                     "courseThumbnailUrl" => $course->thumbnail_url,
                     "instructor" => [
                         "instructorId" => $course->teacher->id,
                         "instructorName" => $course->teacher->name,
                     ],
-                    "categoryName" => $course->category->name,
+                    "categoryName" => [
+                        "en" => $course->category->getTranslation('name', 'en'),
+                        "ar" => $course->category->getTranslation('name', 'ar')
+                    ],
                     "userEnrolledAt" => $course->pivot->enrolled_at,
                 ];
             }),
         ]);
+    }
+
+    public function isEnrolled(Request $request)
+    {
+        $userId = $request->input('user_id');
+        $courseId = $request->input('course_id');
+
+        if (!$userId || !$courseId) {
+            return response()->json(['message' => 'user_id and course_id are required'], 422);
+        }
+
+        $user = User::find($userId);
+        $course = Course::find($courseId);
+
+        if (!$user || !$course) {
+            return response()->json(['message' => 'User or Course not found'], 404);
+        }
+
+        $isEnrolled = $user->courses()->where('course_id', $courseId)->exists();
+
+        if ($isEnrolled) {
+            return response()->json([
+                'userId' => $userId,
+                'courseId' => $courseId,
+                'isEnrolled' => true,
+            ], 200);
+        } else {
+            return response()->json([
+                'userId' => $userId,
+                'courseId' => $courseId,
+                'isEnrolled' => false,
+            ], 409);
+        }
     }
 }
