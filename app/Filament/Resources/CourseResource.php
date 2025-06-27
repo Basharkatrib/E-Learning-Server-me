@@ -10,6 +10,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Traits\HasRoleBasedAccess;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Livewire\TemporaryUploadedFile;
 
 class CourseResource extends Resource
 {
@@ -66,17 +68,25 @@ class CourseResource extends Resource
                     ->label('Image')
                     ->image()
                     ->disk('cloudinary')
+                    ->directory('courses')
                     ->visibility('public')
-                    ->imageResizeMode('cover')
-                    ->imageCropAspectRatio('16:9')
-                    ->imageResizeTargetWidth('1920')
-                    ->imageResizeTargetHeight('1080')
-                    ->maxSize(5120) // 5MB
+                    ->maxSize(5120)
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/jpg'])
                     ->required()
                     ->columnSpanFull()
                     ->preserveFilenames()
-                    ->directory('courses'),
+                    ->dehydrateStateUsing(function ($state) {
+                        if (is_array($state)) {
+                            $state = reset($state);
+                        }
+                        if (is_string($state) && str_starts_with($state, 'http')) {
+                            return $state;
+                        }
+                        if (is_string($state)) {
+                            return \Storage::disk('cloudinary')->url($state);
+                        }
+                        return $state;
+                    }),
                 Forms\Components\Select::make('default_language')
                     ->options([
                         'en' => 'English',

@@ -34,7 +34,7 @@ class CourseController extends Controller
             $query->where("title", "like", "%" . $req->search . "%");
         }
 
-        $courses = $query->paginate($request->per_page ?? 10);
+        $courses = $query->paginate($request->per_page ?? 50);
 
         return response()->json($courses);
     }
