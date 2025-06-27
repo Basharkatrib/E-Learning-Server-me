@@ -79,12 +79,15 @@ class CourseResource extends Resource
                         if (is_array($state)) {
                             $state = reset($state);
                         }
+                
                         if (is_string($state) && str_starts_with($state, 'http')) {
                             return $state;
                         }
+                
                         if (is_string($state)) {
-                            return \Storage::disk('cloudinary')->url($state);
+                            return str_replace('http://', 'https://', \Storage::disk('cloudinary')->url($state));
                         }
+                
                         return $state;
                     }),
                 Forms\Components\Select::make('default_language')
