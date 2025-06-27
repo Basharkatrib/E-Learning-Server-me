@@ -17,7 +17,6 @@ use App\Http\Controllers\Auth\{
     SessionController,
     VerifyEmailController,
 };
-use Illuminate\Support\Facades\DB;
 
 Route::get('/user', function (Request $request) {
     return $request->user();
