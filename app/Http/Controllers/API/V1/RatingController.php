@@ -61,8 +61,13 @@ class RatingController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRatingRequest $req, Rating $rating)
+    public function update(UpdateRatingRequest $req, Course $course, Rating $rating)
     {
+
+        if ($rating->course_id !== $course->id) {
+            return response()->json(["message" => "Rating does not belong to this course"], 400);
+        }
+
         if ($rating->user_id !== Auth::id()) {
             return response()->json([
                 "message" => "unauthorized"
@@ -83,8 +88,13 @@ class RatingController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Rating $rating)
+    public function destroy(Course $course, Rating $rating)
     {
+
+        if ($rating->course_id !== $course->id) {
+            return response()->json(["message" => "Rating does not belong to this course"], 400);
+        }
+
         if ($rating->user_id !== Auth::id()) {
             return response()->json([
                 "message" => "unauthorized"

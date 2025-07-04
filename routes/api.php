@@ -78,8 +78,8 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
 
     //ratings
     Route::post("/courses/{course}/ratings", [RatingController::class, "store"])->middleware("auth:sanctum");
-    Route::put("/ratings/{rating}", [RatingController::class, "update"])->middleware("auth:sanctum");
-    Route::delete("/ratings/{rating}", [RatingController::class, "destroy"])->middleware("auth:sanctum");
+    Route::put("/courses/{course}/ratings/{rating}", [RatingController::class, "update"])->middleware("auth:sanctum");
+    Route::delete("/courses/{course}/ratings/{rating}", [RatingController::class, "destroy"])->middleware("auth:sanctum");
 
     Route::post('/enrollment/check', [EnrollmentController::class, 'isEnrolled'])->middleware("auth:sanctum");
 });
@@ -92,8 +92,3 @@ Route::middleware('auth:sanctum')->post('/notifications/read', function (Request
     $request->user()->unreadNotifications->markAsRead();
     return response()->noContent();
 });
-
-
-
-
-
