@@ -36,6 +36,9 @@ class EnrollmentController extends Controller
         DB::transaction(function () use ($course) {
             Auth::user()->courses()->attach($course->id, [
                 "enrolled_at" => now(),
+                "progress" => 0,
+                "videos_completed" => false,
+                "completed_at" => null
             ]);
         });
 
@@ -46,6 +49,8 @@ class EnrollmentController extends Controller
                 'courseTitle' => $course->title,
                 "userId" => Auth::user()->id,
                 "enrolledAt" => now()->toDateString(),
+                "progress" => 0,
+                "videosCompleted" => false
             ]
         ]);
     }
@@ -80,7 +85,7 @@ class EnrollmentController extends Controller
      */
     public function enrolledUsers(Request $req, Course $course)
     {
-        
+
         if (!Auth::check()) {
             return response()->json(["message" => "Unauthorized"], 403);
         }
@@ -189,5 +194,80 @@ class EnrollmentController extends Controller
                 'isEnrolled' => false,
             ], 409);
         }
+    }
+
+    /**
+     * Get course progress for authenticated user
+     */
+    public function getCourseProgress(Course $course)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(["message" => "Unauthenticated"], 401);
+        }
+
+        $enrollment = $user->enrolledCourses()
+            ->where("course_id", $course->id)
+            ->first();
+
+        if (!$enrollment) {
+            return response()->json([
+                "message" => "User is not enrolled in this course"
+            ], 404);
+        }
+
+        return response()->json([
+            "courseId" => $course->id,
+            "userId" => $user->id,
+            "progress" => $enrollment->pivot->progress,
+            "videosCompleted" => (bool)$enrollment->pivot->videos_completed,
+            "completedAt" => $enrollment->pivot->completed_at,
+            "canTakeQuiz" => (bool)$enrollment->pivot->videos_completed
+        ]);
+    }
+
+    /**
+     * Update course progress
+     */
+    public function updateProgress(Request $request, Course $course)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(["message" => "Unauthenticated"], 401);
+        }
+
+        $request->validate([
+            "progress" => ["required", "integer", "min:0", "max:100"],
+            "videos_completed" => ["sometimes", "boolean"],
+        ]);
+
+        $enrollment = $user->enrolledCourses()
+            ->where("course_id", $course->id)
+            ->first();
+
+        if (!$enrollment) {
+            return response()->json([
+                "message" => "User is not enrolled in this course"
+            ], 404);
+        }
+
+        $updateData = [
+            "progress" => $request->progress
+        ];
+
+        if ($request->has("videos_completed")) {
+            $updateData["videos_completed"] = $request->videos_completed;
+            $updateData["completed_at"] = $request->videos_completed ? now() : null;
+        }
+
+        $user->enrolledCourses()->updateExistingPivot($course->id, $updateData);
+
+        return response()->json([
+            "message" => "Progress updated successfully",
+            "progress" => $request->progress,
+            "videosCompleted" => $request->videos_completed ?? $enrollment->pivot->videos_completed
+        ]);
     }
 }

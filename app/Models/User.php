@@ -10,7 +10,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
-
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
@@ -65,9 +65,16 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         return $this->hasMany(Course::class, "created_by");
     }
 
-    public function enrolledCourses()
+    public function enrolledCourses():BelongsToMany
     {
-        return $this->courses();
+        return $this->belongsToMany(Course::class, "course_user")
+            ->withPivot([
+                "enrolled_at",
+                "progress",
+                "videos_completed",
+                "completed_at"
+            ])
+            ->withTimestamps();
     }
 
     public function isAdmin()

@@ -70,6 +70,10 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::get('/courses', [CourseController::class, 'index']);
     Route::get('/courses/{course}', [CourseController::class, 'show']);
 
+    //course progress
+    Route::get("/courses/{course}/progress", [EnrollmentController::class, "getCourseProgress"])->middleware("auth:sanctum");
+    Route::post("/courses/{course}/progress", [EnrollmentController::class, "updateProgress"])->middleware("auth:sanctum");
+
     //enrollments routes
     Route::post("/courses/{course}/enroll", [EnrollmentController::class, "enroll"])->middleware("auth:sanctum");
     Route::delete("/courses/{course}/unenroll", [EnrollmentController::class, "unenroll"])->middleware("auth:sanctum");
