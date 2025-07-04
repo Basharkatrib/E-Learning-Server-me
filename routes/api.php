@@ -63,7 +63,7 @@ Route::get("/verify-email/{id}/{hash}", [VerifyEmailController::class, "__invoke
 
 Route::post("/verify-otp", [RegisterUserFromPhoneController::class, "verifyOtp"]);
 
-This routes made for category/courses/sections/videos
+//This routes made for category/courses/sections/videos
 
 Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], function () {
     Route::get("categories", [CategoryController::class, "index"]);
