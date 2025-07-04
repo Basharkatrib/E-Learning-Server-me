@@ -3,7 +3,8 @@
 use App\Http\Controllers\API\V1\{
     CategoryController,
     CourseController,
-    EnrollmentController
+    EnrollmentController,
+    RatingController
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -69,13 +70,22 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::get('/courses', [CourseController::class, 'index']);
     Route::get('/courses/{course}', [CourseController::class, 'show']);
 
+    //course progress
+    Route::get("/courses/{course}/progress", [EnrollmentController::class, "getCourseProgress"])->middleware("auth:sanctum");
+    Route::post("/courses/{course}/progress", [EnrollmentController::class, "updateProgress"])->middleware("auth:sanctum");
+
     //enrollments routes
     Route::post("/courses/{course}/enroll", [EnrollmentController::class, "enroll"])->middleware("auth:sanctum");
     Route::delete("/courses/{course}/unenroll", [EnrollmentController::class, "unenroll"])->middleware("auth:sanctum");
     Route::get("/courses/{course}/enrollments", [EnrollmentController::class, "enrolledUsers"])->middleware("auth:sanctum");
     Route::get("/users/{user}/enrollments", [EnrollmentController::class, "userEnrollments"])->middleware("auth:sanctum");
-    Route::post('/enrollment/check', [EnrollmentController::class, 'isEnrolled'])->middleware("auth:sanctum");
 
+    //ratings
+    Route::post("/courses/{course}/ratings", [RatingController::class, "store"])->middleware("auth:sanctum");
+    Route::put("/courses/{course}/ratings/{rating}", [RatingController::class, "update"])->middleware("auth:sanctum");
+    Route::delete("/courses/{course}/ratings/{rating}", [RatingController::class, "destroy"])->middleware("auth:sanctum");
+
+    Route::post('/enrollment/check', [EnrollmentController::class, 'isEnrolled'])->middleware("auth:sanctum");
 });
 
 Route::middleware('auth:sanctum')->get('/notifications', function (Request $request) {
@@ -86,8 +96,3 @@ Route::middleware('auth:sanctum')->post('/notifications/read', function (Request
     $request->user()->unreadNotifications->markAsRead();
     return response()->noContent();
 });
-
-
-
-
-
