@@ -78,9 +78,81 @@ class RegisterUserFromPhoneController extends Controller
 
         $otpRec->delete(); // remove OTP after successful verification
 
-        return response()->json([
+        return response()->json(
+            [
                 "message" => "Email verified successfully"
             ],
-            200);
+            200
+        );
+    }
+    /**
+     * Send password reset OTP
+     */
+    public function sendResetOtp(Request $request): JsonResponse
+    {
+        $request->validate(['email' => 'required|email|exists:users,email']);
+
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        // Generate OTP
+        $otp = rand(100000, 999999);
+        $expiresAt = now()->addMinutes(20);
+
+        // Delete any existing OTPs for this user
+        UserOtps::where('user_id', $user->id)->delete();
+
+        // Create new OTP record
+        UserOtps::create([
+            'user_id' => $user->id,
+            'otp' => $otp,
+            'expires_at' => $expiresAt
+        ]);
+
+        // Send OTP to user's email
+        Mail::raw("Your password reset OTP is: $otp", function ($message) use ($user) {
+            $message->to($user->email)
+                ->subject('Password Reset OTP');
+        });
+
+        return response()->json([
+            'message' => 'OTP sent to your email',
+            'user_id' => $user->id
+        ]);
+    }
+
+    /**
+     * Reset password with OTP verification
+     */
+    public function resetPasswordWithOtp(Request $request): JsonResponse
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'otp' => 'required|string',
+            'password' => 'required|confirmed|min:8',
+        ]);
+
+        // Verify OTP
+        $otpRecord = UserOtps::where('user_id', $request->user_id)
+            ->where('otp', $request->otp)
+            ->where('expires_at', '>',now())
+            ->first();
+
+        if (!$otpRecord) {
+            return response()->json(['message' => 'Invalid or expired OTP'], 400);
+        }
+
+        // Update password
+        $user = User::find($request->user_id);
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Delete the used OTP
+        $otpRecord->delete();
+
+        return response()->json(['message' => 'Password reset successfully']);
     }
 }

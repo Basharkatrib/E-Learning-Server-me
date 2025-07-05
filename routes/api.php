@@ -39,6 +39,9 @@ Route::middleware("guest:sanctum")->group(function () {
 
     Route::post("/reset-password", [NewPassWordController::class, "store"])
         ->name("password.store");
+
+    Route::post("/send-reset-otp", [RegisterUserFromPhoneController::class, "sendResetOtp"]);
+    Route::post("/reset-password-with-otp", [RegisterUserFromPhoneController::class, "resetPasswordWithOtp"]);
 });
 
 // Protected routes (require auth via Sanctum token)
@@ -48,8 +51,8 @@ Route::middleware("auth:sanctum")->group(function () {
         ->name("logout");
 
     Route::post("/email/verification-notification", [EmailVerificationNotificationController::class, "store"])
-        ->middleware('throttle:6,1')
-        ->name('verification.send');
+        ->middleware("throttle:6,1")
+        ->name("verification.send");
 });
 
 Route::post("/resend-email-verification-link", [EmailVerificationNotificationController::class, "resend"])
@@ -59,7 +62,7 @@ Route::post("/resend-email-verification-link", [EmailVerificationNotificationCon
 // Email verification (signed URL + auth)
 Route::get("/verify-email/{id}/{hash}", [VerifyEmailController::class, "__invoke"])
     ->middleware(["signed", "throttle:6,1"])
-    ->name('verification.verify');
+    ->name("verification.verify");
 
 Route::post("/verify-otp", [RegisterUserFromPhoneController::class, "verifyOtp"]);
 
@@ -67,8 +70,8 @@ Route::post("/verify-otp", [RegisterUserFromPhoneController::class, "verifyOtp"]
 
 Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], function () {
     Route::get("categories", [CategoryController::class, "index"]);
-    Route::get('/courses', [CourseController::class, 'index']);
-    Route::get('/courses/{course}', [CourseController::class, 'show']);
+    Route::get("/courses", [CourseController::class, "index"]);
+    Route::get("/courses/{course}", [CourseController::class, "show"]);
 
     //course progress
     Route::get("/courses/{course}/progress", [EnrollmentController::class, "getCourseProgress"])->middleware("auth:sanctum");
@@ -85,14 +88,14 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::put("/courses/{course}/ratings/{rating}", [RatingController::class, "update"])->middleware("auth:sanctum");
     Route::delete("/courses/{course}/ratings/{rating}", [RatingController::class, "destroy"])->middleware("auth:sanctum");
 
-    Route::post('/enrollment/check', [EnrollmentController::class, 'isEnrolled'])->middleware("auth:sanctum");
+    Route::post("/enrollment/check", [EnrollmentController::class, "isEnrolled"])->middleware("auth:sanctum");
 });
 
-Route::middleware('auth:sanctum')->get('/notifications', function (Request $request) {
+Route::middleware("auth:sanctum")->get("/notifications", function (Request $request) {
     return $request->user()->unreadNotifications;
 });
 
-Route::middleware('auth:sanctum')->post('/notifications/read', function (Request $request) {
+Route::middleware("auth:sanctum")->post("/notifications/read", function (Request $request) {
     $request->user()->unreadNotifications->markAsRead();
     return response()->noContent();
 });
