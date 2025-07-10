@@ -87,6 +87,7 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::post("/courses/{course}/ratings", [RatingController::class, "store"])->middleware("auth:sanctum");
     Route::put("/courses/{course}/ratings/{rating}", [RatingController::class, "update"])->middleware("auth:sanctum");
     Route::delete("/courses/{course}/ratings/{rating}", [RatingController::class, "destroy"])->middleware("auth:sanctum");
+    Route::get('courses/{course}/my-rating', [RatingController::class, 'myRating'])->middleware("auth:sanctum");
 
     Route::post("/enrollment/check", [EnrollmentController::class, "isEnrolled"])->middleware("auth:sanctum");
 });
