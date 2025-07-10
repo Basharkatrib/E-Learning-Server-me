@@ -107,4 +107,13 @@ class RatingController extends Controller
             "message" => "Rating deleted successfully"
         ], 200);
     }
+
+    public function myRating(Course $course)
+    {
+        $rating = $course->ratings()->where('user_id', Auth::id())->first();
+        if (!$rating) {
+            return response()->json(['message' => 'No rating found'], 404);
+        }
+        return response()->json(['rating' => $rating], 200);
+    }
 }

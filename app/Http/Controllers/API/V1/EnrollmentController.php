@@ -18,7 +18,6 @@ class EnrollmentController extends Controller
     {
         //Only students can enroll
         $user = Auth::user();
-        $user = Auth::user();
 
         if (!$user) {
             return response()->json(['message' => 'Unauthenticated'], 401);
