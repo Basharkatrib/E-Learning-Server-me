@@ -4,7 +4,8 @@ use App\Http\Controllers\API\V1\{
     CategoryController,
     CourseController,
     EnrollmentController,
-    RatingController
+    RatingController,
+    VideoWatchController
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +18,8 @@ use App\Http\Controllers\Auth\{
     SessionController,
     VerifyEmailController,
 };
+
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -76,6 +79,12 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     //course progress
     Route::get("/courses/{course}/progress", [EnrollmentController::class, "getCourseProgress"])->middleware("auth:sanctum");
     Route::post("/courses/{course}/progress", [EnrollmentController::class, "updateProgress"])->middleware("auth:sanctum");
+
+    //Watched videos
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/videos/{video}/watch', [VideoWatchController::class, 'markAsWatched']);
+        Route::get('/user/watched-videos', [VideoWatchController::class, 'getWatchedVideos']);
+    });
 
     //enrollments routes
     Route::post("/courses/{course}/enroll", [EnrollmentController::class, "enroll"])->middleware("auth:sanctum");

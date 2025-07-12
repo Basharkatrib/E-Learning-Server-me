@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Video extends Model
 {
@@ -32,5 +32,12 @@ class Video extends Model
     public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class);
+    }
+
+    public function viewers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'video_user')
+            ->withTimestamps()
+            ->withPivot('watched_at');
     }
 }
