@@ -24,12 +24,19 @@ class RegisterUserFromPhoneController extends Controller
             "name" => ["required", "string", "max:255"],
             "email" => ["required", "email", "unique:users,email"],
             "password" => ["required", "confirmed", "min:8"],
+            "profile_image" => ["nullable", "image", "mimes:jpeg,jpg,png,webp", "max:4096"],
         ]);
 
+        if ($request->hasFile("profile_image")) {
+            $path = $request->file("profile_image")->store("profile_image", "cloudinary");
+            $profileImageUrl = Storage::disk("cloudinary")->url($path);
+        }
+
         $user = User::create([
-            "name" => $request->input('name'),
-            "email" => $request->input('email'),
-            "password" => Hash::make($request->input('password')),
+            "name" => $request->input("name"),
+            "email" => $request->input("email"),
+            "password" => Hash::make($request->input("password")),
+            "profile_image" => $profileImageUrl,
         ]);
 
         //Generates otp
@@ -90,12 +97,12 @@ class RegisterUserFromPhoneController extends Controller
      */
     public function sendResetOtp(Request $request): JsonResponse
     {
-        $request->validate(['email' => 'required|email|exists:users,email']);
+        $request->validate(["email" => ["required", "email", "exists:users,email"]]);
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where("email", $request->email)->first();
 
         if (!$user) {
-            return response()->json(['message' => 'User not found'], 404);
+            return response()->json(["message" => "User not found"], 404);
         }
 
         // Generate OTP
@@ -103,24 +110,24 @@ class RegisterUserFromPhoneController extends Controller
         $expiresAt = now()->addMinutes(20);
 
         // Delete any existing OTPs for this user
-        UserOtps::where('user_id', $user->id)->delete();
+        UserOtps::where("user_id", $user->id)->delete();
 
         // Create new OTP record
         UserOtps::create([
-            'user_id' => $user->id,
-            'otp' => $otp,
-            'expires_at' => $expiresAt
+            "user_id" => $user->id,
+            "otp" => $otp,
+            "expires_at" => $expiresAt
         ]);
 
         // Send OTP to user's email
         Mail::raw("Your password reset OTP is: $otp", function ($message) use ($user) {
             $message->to($user->email)
-                ->subject('Password Reset OTP');
+                ->subject("Password Reset OTP");
         });
 
         return response()->json([
-            'message' => 'OTP sent to your email',
-            'user_id' => $user->id
+            "message" => "OTP sent to your email",
+            "user_id" => $user->id
         ]);
     }
 
@@ -130,19 +137,19 @@ class RegisterUserFromPhoneController extends Controller
     public function resetPasswordWithOtp(Request $request): JsonResponse
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'otp' => 'required|string',
-            'password' => 'required|confirmed|min:8',
+            "user_id" => ["required", "exists:users,id"],
+            "otp" => ["required", "string"],
+            "password" => ["required", "confirmed", "min:8"],
         ]);
 
         // Verify OTP
-        $otpRecord = UserOtps::where('user_id', $request->user_id)
-            ->where('otp', $request->otp)
-            ->where('expires_at', '>',now())
+        $otpRecord = UserOtps::where("user_id", $request->user_id)
+            ->where("otp", $request->otp)
+            ->where("expires_at", ">", now())
             ->first();
 
         if (!$otpRecord) {
-            return response()->json(['message' => 'Invalid or expired OTP'], 400);
+            return response()->json(["message" => "Invalid or expired OTP"], 400);
         }
 
         // Update password
@@ -153,6 +160,6 @@ class RegisterUserFromPhoneController extends Controller
         // Delete the used OTP
         $otpRecord->delete();
 
-        return response()->json(['message' => 'Password reset successfully']);
+        return response()->json(["message" => "Password reset successfully"]);
     }
 }
