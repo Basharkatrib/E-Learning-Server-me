@@ -4,7 +4,9 @@ use App\Http\Controllers\API\V1\{
     CategoryController,
     CourseController,
     EnrollmentController,
-    RatingController
+    RatingController,
+    QuizController,
+    QuizAttemptController,
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -90,6 +92,19 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::get('courses/{course}/my-rating', [RatingController::class, 'myRating'])->middleware("auth:sanctum");
 
     Route::post("/enrollment/check", [EnrollmentController::class, "isEnrolled"])->middleware("auth:sanctum");
+
+    //quizzes
+    Route::get("courses/{course}/quiz/{quiz}", [QuizController::class, "show"]);
+    Route::post("courses/{course}/create-quiz", [QuizController::class,"store"])->middleware("auth:sanctum");
+    Route::put("courses/{course}/update-quiz/{quiz}", [QuizController::class,"update"])->middleware("auth:sanctum");
+    Route::delete("courses/{course}/delete-quiz/{quiz}", [QuizController::class,"destroy"])->middleware("auth:sanctum");
+
+    //user attempt
+    Route::post("courses/{course}/quiz/{quiz}/attempts", [QuizAttemptController::class, "start"]);
+
+    Route::post("quiz-attempts/{attempt}/answers", [QuizAttemptController::class, "submitAnswer"]);
+    Route::post("quiz-attempts/{attempt}/complete", [QuizAttemptController::class, "complete"]);
+    Route::post("quiz-attempts/{attempt}/results", [QuizAttemptController::class, "results"]);
 });
 
 Route::middleware("auth:sanctum")->get("/notifications", function (Request $request) {
