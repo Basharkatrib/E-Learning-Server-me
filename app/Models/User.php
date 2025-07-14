@@ -66,7 +66,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         return $this->hasMany(Course::class, "created_by");
     }
 
-    public function enrolledCourses():BelongsToMany
+    public function enrolledCourses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, "course_user")
             ->withPivot([
@@ -97,6 +97,14 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     {
         return $this->hasMany(Rating::class);
     }
+
+    public function watchedVideos(): BelongsToMany
+    {
+        return $this->belongsToMany(Video::class, 'video_user')
+            ->withTimestamps()
+            ->withPivot('watched_at');
+    }
+
 
     public function canAccessPanel(Panel $panel): bool
     {

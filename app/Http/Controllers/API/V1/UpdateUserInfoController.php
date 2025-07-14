@@ -25,14 +25,14 @@ class UpdateUserInfoController extends Controller
 
         if ($req->hasFile("profile_image")) {
             // Delete old image from Cloudinary if exists
+            // Delete old image
             if ($user->profile_image) {
                 Cloudinary::destroy($user->profile_image);
             }
 
-            if ($req->hasFile("profile_image")) {
-                $path = $req->file("profile_image")->store("profile_image", "cloudinary");
-                Storage::disk("cloudinary")->url($path);
-            }
+            // Upload new image
+            $path = $req->file("profile_image")->store("profile_image", "cloudinary");
+            $user->profile_image = $path;
         }
 
         $user->save();

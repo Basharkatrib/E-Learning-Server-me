@@ -7,6 +7,8 @@ use App\Http\Controllers\API\V1\{
     RatingController,
     QuizController,
     QuizAttemptController,
+    UpdateUserInfoController,
+    VideoWatchController,
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -79,6 +81,12 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::get("/courses/{course}/progress", [EnrollmentController::class, "getCourseProgress"])->middleware("auth:sanctum");
     Route::post("/courses/{course}/progress", [EnrollmentController::class, "updateProgress"])->middleware("auth:sanctum");
 
+    //Watched videos
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/videos/{video}/watch', [VideoWatchController::class, 'markAsWatched']);
+        Route::get('/user/watched-videos', [VideoWatchController::class, 'getWatchedVideos']);
+    });
+
     //enrollments routes
     Route::post("/courses/{course}/enroll", [EnrollmentController::class, "enroll"])->middleware("auth:sanctum");
     Route::delete("/courses/{course}/unenroll", [EnrollmentController::class, "unenroll"])->middleware("auth:sanctum");
@@ -105,6 +113,10 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::post("quiz-attempts/{attempt}/answers", [QuizAttemptController::class, "submitAnswer"]);
     Route::post("quiz-attempts/{attempt}/complete", [QuizAttemptController::class, "complete"]);
     Route::post("quiz-attempts/{attempt}/results", [QuizAttemptController::class, "results"]);
+
+    //updateUserInfo
+   
+    Route::put("/profile", [UpdateUserInfoController::class, "updateProfile"])->middleware("auth:sanctum");
 });
 
 Route::middleware("auth:sanctum")->get("/notifications", function (Request $request) {
