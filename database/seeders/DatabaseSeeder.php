@@ -30,6 +30,7 @@ class DatabaseSeeder extends Seeder
             SectionSeeder::class,
             BenefitsCourseSeeder::class,
             VideosSeeder::class,
+            QuizeSeeder::class,
         ]);
     }
 }

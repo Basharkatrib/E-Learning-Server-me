@@ -5,7 +5,10 @@ use App\Http\Controllers\API\V1\{
     CourseController,
     EnrollmentController,
     RatingController,
-    VideoWatchController
+    QuizController,
+    QuizAttemptController,
+    UpdateUserInfoController,
+    VideoWatchController,
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,8 +21,6 @@ use App\Http\Controllers\Auth\{
     SessionController,
     VerifyEmailController,
 };
-
-
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -99,6 +100,22 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::get('courses/{course}/my-rating', [RatingController::class, 'myRating'])->middleware("auth:sanctum");
 
     Route::post("/enrollment/check", [EnrollmentController::class, "isEnrolled"])->middleware("auth:sanctum");
+
+    // Quiz Routes
+    Route::get("courses/{course}/quiz", [QuizController::class, "index"]);
+    Route::get("courses/{course}/quiz/{quiz}", [QuizController::class, "show"]);
+    Route::post("courses/{course}/quiz/{quiz}/submit", [QuizController::class, "submit"])->middleware("auth:sanctum");
+
+    //user attempt
+    Route::post("courses/{course}/quiz/{quiz}/attempts", [QuizAttemptController::class, "start"])->middleware("auth:sanctum");
+
+    Route::post("quiz-attempts/{attempt}/answers", [QuizAttemptController::class, "submitAnswer"])->middleware("auth:sanctum");
+    Route::post("quiz-attempts/{attempt}/complete", [QuizAttemptController::class, "complete"])->middleware("auth:sanctum");
+    Route::post("quiz-attempts/{attempt}/results", [QuizAttemptController::class, "results"])->middleware("auth:sanctum");
+
+    //updateUserInfo
+   
+    Route::post("/profile", [UpdateUserInfoController::class, "updateProfile"])->middleware("auth:sanctum");
 });
 
 Route::middleware("auth:sanctum")->get("/notifications", function (Request $request) {
