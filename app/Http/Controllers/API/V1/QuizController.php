@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreQuizeRequest;
 use App\Http\Requests\UpdateQuizeRequest;
+use App\Http\Resources\QuizResource;
 use App\Models\Course;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
@@ -37,7 +38,7 @@ class QuizController extends Controller
 
         $quiz = Quiz::create([
             "course_id" => $courseId,
-            "title" => $req->tilte,
+            "title" => $req->title,
             "description" => $req->description,
             "time_limit" => $req->timeLimit,
             "passing_score" => $req->passingScore,
@@ -53,7 +54,7 @@ class QuizController extends Controller
             ->where("course_id", $courseId)
             ->findOrFail($quizId);
 
-        return response()->json($quiz);
+        return new QuizResource($quiz);
     }
 
     public function update(UpdateQuizeRequest $req, $courseId, $quizId)

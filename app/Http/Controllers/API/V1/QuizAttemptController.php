@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\QuizResource;
 use App\Models\Option;
 use App\Models\Question;
 use App\Models\Quiz;
@@ -25,8 +26,9 @@ class QuizAttemptController extends Controller
             ], 403);
         }
 
-        $quiz = Quiz::where("courseId", $courseId)
-            ->findOrFail();
+        $quiz = Quiz::where("course_id", $courseId)
+            ->where("id", $quizId)
+            ->firstOrFail();
 
         // Check for existing incomplete attempt
         $existingAttempt = QuizAttempt::where("user_id", Auth::id())
@@ -48,12 +50,12 @@ class QuizAttemptController extends Controller
             "status" => "in_progress"
         ]);
 
+        $quiz->load("questions.options");
+
         return response()->json([
             "message" => "Quiz attempt started",
             "attemptId" => $attempt->id,
-            "quiz" => $quiz->load(["questions.options" => function ($query) {
-                $query->select("id", "question_id", "option_text");
-            }])
+            "quiz" => new QuizResource($quiz),
         ]);
     }
 
@@ -66,31 +68,34 @@ class QuizAttemptController extends Controller
             return response()->json(["message" => "This attempt is no longer in progress"], 400);
         }
 
-        $validated = $req->validate([
-            "question_id" => ["required", "exsits:questions,id"],
-            "option_id" => ["nullable", "exists:options,id"],
-        ]);
+         $validated = $req->validate([
+        "answers" => ["required", "array"],
+        "answers.*.question_id" => ["required", "exists:questions,id"],
+        "answers.*.option_id" => ["nullable", "exists:options,id"],
+    ]);
 
-        $question = Question::find($validated["question_id"]);
+    foreach ($validated["answers"] as $answer) {
+        $question = Question::find($answer["question_id"]);
         $isCorrect = false;
         $pointsEarned = 0;
 
-        if ($question->question_type === "multiple_choice" || $question->question_type === "true_false") {
-            $selectedOption = Option::find($validated["option_id"]);
+        if (in_array($question->question_type, ["multiple_choice", "true_false"])) {
+            $selectedOption = Option::find($answer["option_id"]);
             $isCorrect = $selectedOption ? $selectedOption->is_correct : false;
             $pointsEarned = $isCorrect ? $question->points : 0;
         }
 
         UserAnswer::updateOrCreate([
             "quiz_attempt_id" => $attemptId,
-            "question_id" => $validated["question_id"]
+            "question_id" => $answer["question_id"]
         ], [
-            "option_id" => $validated["option_id"] ?? null,
+            "option_id" => $answer["option_id"] ?? null,
             "is_correct" => $isCorrect,
             "points_earned" => $pointsEarned,
         ]);
+    }
 
-        return response()->json(["message" => "Answer submitted"], 200);
+    return response()->json(["message" => "Answers submitted successfully"]);
     }
 
     public function complete(Request $req, $attemptId)

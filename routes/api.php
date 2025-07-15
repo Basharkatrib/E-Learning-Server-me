@@ -108,11 +108,11 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::delete("courses/{course}/delete-quiz/{quiz}", [QuizController::class,"destroy"])->middleware("auth:sanctum");
 
     //user attempt
-    Route::post("courses/{course}/quiz/{quiz}/attempts", [QuizAttemptController::class, "start"]);
+    Route::post("courses/{course}/quiz/{quiz}/attempts", [QuizAttemptController::class, "start"])->middleware("auth:sanctum");
 
-    Route::post("quiz-attempts/{attempt}/answers", [QuizAttemptController::class, "submitAnswer"]);
-    Route::post("quiz-attempts/{attempt}/complete", [QuizAttemptController::class, "complete"]);
-    Route::post("quiz-attempts/{attempt}/results", [QuizAttemptController::class, "results"]);
+    Route::post("quiz-attempts/{attempt}/answers", [QuizAttemptController::class, "submitAnswer"])->middleware("auth:sanctum");
+    Route::post("quiz-attempts/{attempt}/complete", [QuizAttemptController::class, "complete"])->middleware("auth:sanctum");
+    Route::post("quiz-attempts/{attempt}/results", [QuizAttemptController::class, "results"])->middleware("auth:sanctum");
 
     //updateUserInfo
    
