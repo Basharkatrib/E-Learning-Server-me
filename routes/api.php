@@ -116,7 +116,7 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
 
     //updateUserInfo
    
-    Route::put("/profile", [UpdateUserInfoController::class, "updateProfile"])->middleware("auth:sanctum");
+    Route::post("/profile", [UpdateUserInfoController::class, "updateProfile"])->middleware("auth:sanctum");
 });
 
 Route::middleware("auth:sanctum")->get("/notifications", function (Request $request) {

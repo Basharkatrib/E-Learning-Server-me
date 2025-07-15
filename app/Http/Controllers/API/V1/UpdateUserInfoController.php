@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class UpdateUserInfoController extends Controller
 {
@@ -19,20 +18,17 @@ class UpdateUserInfoController extends Controller
             "profile_image" => ["sometimes", "image", "mimes:jpeg,jpg,png,webp", "max:4096"],
         ]);
 
-        if ($req->has("name")) {
+        if ($req->filled("name")) {
             $user->name = $req->name;
         }
 
         if ($req->hasFile("profile_image")) {
-            // Delete old image from Cloudinary if exists
-            // Delete old image
-            if ($user->profile_image) {
-                Cloudinary::destroy($user->profile_image);
-            }
+            $uploaded = Cloudinary::uploadApi()->upload(
+                $req->file('profile_image')->getRealPath(),
+                ['folder' => 'profile_image']
+            );
 
-            // Upload new image
-            $path = $req->file("profile_image")->store("profile_image", "cloudinary");
-            $user->profile_image = $path;
+            $user->profile_image = $uploaded['secure_url'];
         }
 
         $user->save();
