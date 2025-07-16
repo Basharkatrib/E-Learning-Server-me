@@ -101,11 +101,10 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
 
     Route::post("/enrollment/check", [EnrollmentController::class, "isEnrolled"])->middleware("auth:sanctum");
 
-    //quizzes
+    // Quiz Routes
+    Route::get("courses/{course}/quiz", [QuizController::class, "index"]);
     Route::get("courses/{course}/quiz/{quiz}", [QuizController::class, "show"]);
-    Route::post("courses/{course}/create-quiz", [QuizController::class,"store"])->middleware("auth:sanctum");
-    Route::put("courses/{course}/update-quiz/{quiz}", [QuizController::class,"update"])->middleware("auth:sanctum");
-    Route::delete("courses/{course}/delete-quiz/{quiz}", [QuizController::class,"destroy"])->middleware("auth:sanctum");
+    Route::post("courses/{course}/quiz/{quiz}/submit", [QuizController::class, "submit"])->middleware("auth:sanctum");
 
     //user attempt
     Route::post("courses/{course}/quiz/{quiz}/attempts", [QuizAttemptController::class, "start"])->middleware("auth:sanctum");
@@ -116,7 +115,7 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
 
     //updateUserInfo
    
-    Route::put("/profile", [UpdateUserInfoController::class, "updateProfile"])->middleware("auth:sanctum");
+    Route::post("/profile", [UpdateUserInfoController::class, "updateProfile"])->middleware("auth:sanctum");
 });
 
 Route::middleware("auth:sanctum")->get("/notifications", function (Request $request) {

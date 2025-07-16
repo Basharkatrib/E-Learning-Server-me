@@ -3,94 +3,99 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\StoreQuizeRequest;
-use App\Http\Requests\UpdateQuizeRequest;
 use App\Http\Resources\QuizResource;
 use App\Models\Course;
 use App\Models\Quiz;
+use App\Models\QuizAttempt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class QuizController extends Controller
 {
+    // Get all quizzes for a course
     public function index(Request $req, $courseId)
     {
-        // Anyone can view published quizzes
         $quizzes = Quiz::where("course_id", $courseId)
-            ->when($req->has("published"), function ($query) use ($req) {
-                $query->where("is_published", $req->published);
-            })
+            ->with(['questions.options'])
             ->get();
 
         return response()->json($quizzes);
     }
 
-    public function store(StoreQuizeRequest $req, $courseId)
+    // Check if user has already attempted the quiz
+    private function hasAttemptedQuiz($quizId)
     {
-        $course = Course::findOrFail($courseId);
+        return QuizAttempt::where('user_id', Auth::id())
+            ->where('quiz_id', $quizId)
+            ->exists();
+    }
 
-        // Only the teacher can create quizzes
-        if (Auth::user()->id !== $course->user_id) {
+    // Get a specific quiz with its questions
+    public function show($courseId, $quizId)
+    {
+        // Check if user has already attempted this quiz
+        if ($this->hasAttemptedQuiz($quizId)) {
             return response()->json([
-                "message" => "Only the creator of the course can create quizzes"
+                'error' => 'لقد قمت بإجراء هذا الاختبار مسبقاً',
+                'has_attempted' => true
             ], 403);
         }
 
-        $quiz = Quiz::create([
-            "course_id" => $courseId,
-            "title" => $req->title,
-            "description" => $req->description,
-            "time_limit" => $req->timeLimit,
-            "passing_score" => $req->passingScore,
-            "is_published" => $req->isPublished ?? false,
-        ]);
-
-        return response()->json($quiz, 201);
-    }
-
-    public function show($courseId, $quizId)
-    {
         $quiz = Quiz::with(["questions.options"])
             ->where("course_id", $courseId)
             ->findOrFail($quizId);
 
-        return new QuizResource($quiz);
+        return response()->json([
+            'quiz' => $quiz,
+            'has_attempted' => false
+        ]);
     }
 
-    public function update(UpdateQuizeRequest $req, $courseId, $quizId)
+    // Submit quiz answers
+    public function submit(Request $request, $courseId, $quizId)
     {
-        $course = Course::findOrFail($courseId);
-        $quiz = Quiz::where("course_id", $courseId)
-            ->findOrFail($quizId);
-
-
-        // Only the teacher can update the quiz
-        if (Auth::user()->id !== $course->user_id) {
+        // Check if user has already attempted this quiz
+        if ($this->hasAttemptedQuiz($quizId)) {
             return response()->json([
-                "message" => "Only the creator of the course can update the quiz"
-            ], 403);
-
-            $quiz->update($req->validate());
-
-            return response()->json($quiz);
-        }
-    }
-
-    public function destroy($courseId, $quizId)
-    {
-        $course = Course::findOrFail($courseId);
-        $quiz = Quiz::where("course_id", $courseId)
-            ->findOrFail($quizId);
-
-        // Only the teacher can delete the quiz
-        if (Auth::user()->id !== $course->user_id) {
-            return response()->json([
-                "message" => "Only the creator of the course can delete the quiz"
+                'error' => 'لقد قمت بإجراء هذا الاختبار مسبقاً',
+                'has_attempted' => true
             ], 403);
         }
 
-        $quiz->delete();
+        $quiz = Quiz::findOrFail($quizId);
+        
+        // Create an attempt
+        $attempt = QuizAttempt::create([
+            'user_id' => Auth::id(),
+            'quiz_id' => $quizId,
+            'status' => 'completed',
+            'started_at' => now(),
+            'completed_at' => now()
+        ]);
 
-        return response()->json(null, 204);
+        // Calculate score
+        $totalQuestions = $quiz->questions()->count();
+        $correctAnswers = 0;
+
+        foreach ($request->answers as $questionId => $answerId) {
+            $question = $quiz->questions()->find($questionId);
+            if ($question && $question->options()->where('id', $answerId)->where('is_correct', true)->exists()) {
+                $correctAnswers++;
+            }
+        }
+
+        $score = ($correctAnswers / $totalQuestions) * 100;
+        
+        // Update attempt with score
+        $attempt->update([
+            'score' => $score,
+        ]);
+
+        return response()->json([
+            'score' => $score,
+            'total_questions' => $totalQuestions,
+            'correct_answers' => $correctAnswers,
+            'passed' => $score >= ($quiz->passing_score ?? 60)
+        ]);
     }
 }
