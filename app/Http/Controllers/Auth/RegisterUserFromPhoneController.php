@@ -24,19 +24,12 @@ class RegisterUserFromPhoneController extends Controller
             "name" => ["required", "string", "max:255"],
             "email" => ["required", "email", "unique:users,email"],
             "password" => ["required", "confirmed", "min:8"],
-            "profile_image" => ["nullable", "image", "mimes:jpeg,jpg,png,webp", "max:4096"],
         ]);
-
-        if ($request->hasFile("profile_image")) {
-            $path = $request->file("profile_image")->store("profile_image", "cloudinary");
-            $profileImageUrl = Storage::disk("cloudinary")->url($path);
-        }
 
         $user = User::create([
             "name" => $request->input("name"),
             "email" => $request->input("email"),
             "password" => Hash::make($request->input("password")),
-            "profile_image" => $profileImageUrl,
         ]);
 
         //Generates otp
