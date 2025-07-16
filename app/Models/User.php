@@ -98,6 +98,12 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         return $this->hasMany(Rating::class);
     }
 
+    public function savedCourses()
+    {
+        return $this->belongsToMany(Course::class, 'saved_courses')
+                    ->withTimestamps();
+    }
+
     public function watchedVideos(): BelongsToMany
     {
         return $this->belongsToMany(Video::class, 'video_user')

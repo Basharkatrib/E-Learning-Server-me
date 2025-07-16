@@ -141,4 +141,23 @@ class CourseController extends Controller
 
         return response()->json($courses);
     }
+
+    /**
+     * Get trending courses based on ratings
+     */
+    public function trending()
+    {
+        $courses = Course::with(['category', 'teacher', 'ratings'])
+            ->withAvg('ratings', 'rating')
+            ->withCount('ratings')
+            ->orderByDesc('ratings_avg_rating')
+            ->orderByDesc('ratings_count')
+            ->take(6)
+            ->get();
+
+        return response()->json([
+            'data' => $courses
+        ]);
+    }
+
 }

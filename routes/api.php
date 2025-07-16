@@ -9,6 +9,8 @@ use App\Http\Controllers\API\V1\{
     QuizAttemptController,
     UpdateUserInfoController,
     VideoWatchController,
+    SavedCourseController,
+    NoteController,
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -75,6 +77,7 @@ Route::post("/verify-otp", [RegisterUserFromPhoneController::class, "verifyOtp"]
 Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], function () {
     Route::get("categories", [CategoryController::class, "index"]);
     Route::get("/courses", [CourseController::class, "index"]);
+    Route::get("/courses/trending", [CourseController::class, "trending"]);
     Route::get("/courses/{course}", [CourseController::class, "show"]);
 
     //course progress
@@ -85,6 +88,12 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/videos/{video}/watch', [VideoWatchController::class, 'markAsWatched']);
         Route::get('/user/watched-videos', [VideoWatchController::class, 'getWatchedVideos']);
+
+        // Saved Courses Routes
+        Route::get('/saved-courses', [SavedCourseController::class, 'index']);
+        Route::post('/saved-courses/{course}', [SavedCourseController::class, 'store']);
+        Route::delete('/saved-courses/{course}', [SavedCourseController::class, 'destroy']);
+        Route::get('/saved-courses/{course}/check', [SavedCourseController::class, 'isSaved']);
     });
 
     //enrollments routes
@@ -115,8 +124,12 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::post("quiz-attempts/{attempt}/results", [QuizAttemptController::class, "results"])->middleware("auth:sanctum");
 
     //updateUserInfo
-   
     Route::post("/profile", [UpdateUserInfoController::class, "updateProfile"])->middleware("auth:sanctum");
+
+    // Notes routes
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::apiResource('notes', NoteController::class);
+    });
 });
 
 Route::middleware("auth:sanctum")->get("/notifications", function (Request $request) {
