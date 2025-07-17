@@ -16,6 +16,9 @@ class UpdateUserInfoController extends Controller
         $req->validate([
             "name" => ["sometimes", "string", "max:255"],
             "profile_image" => ["sometimes", "image", "mimes:jpeg,jpg,png,webp", "max:4096"],
+            "specialization" => ["sometimes", "string", "max:255"],
+            "bio" => ["sometimes", "string", "max:255"],
+            "country" => ["sometimes", "string", "max:255"],
         ]);
 
         if ($req->filled("name")) {
@@ -31,6 +34,18 @@ class UpdateUserInfoController extends Controller
             $user->profile_image = $uploaded['secure_url'];
         }
 
+        if ($req->filled("specialization")) {
+            $user->specialization = $req->specialization;
+        }
+
+        if ($req->filled("bio")) {
+            $user->bio = $req->bio;
+        }
+
+        if ($req->filled("country")) {
+            $user->country = $req->country;
+        }
+
         $user->save();
 
         return response()->json([
@@ -38,7 +53,10 @@ class UpdateUserInfoController extends Controller
             "user" => [
                 "userId" => $user->id,
                 "userName" => $user->name,
-                "userProfileImage" => $user->profile_image
+                "userProfileImage" => $user->profile_image,
+                "userSpecialization" => $user->specialization,
+                "userBio" => $user->bio,
+                "userCountry" => $user->country,
             ]
         ]);
     }
