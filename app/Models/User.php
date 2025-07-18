@@ -28,6 +28,9 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         'password',
         "profile_image",
         'certificate_url',
+        "specialization",
+        "bio",
+        "country",
         'role',
     ];
 
@@ -68,13 +71,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 
     public function enrolledCourses(): BelongsToMany
     {
-        return $this->belongsToMany(Course::class, "course_user")
-            ->withPivot([
-                "enrolled_at",
-                "progress",
-                "videos_completed",
-                "completed_at"
-            ])
+        return $this->belongsToMany(Course::class, 'course_user')
+            ->withPivot(['progress', 'videos_completed', 'completed_at'])
             ->withTimestamps();
     }
 
@@ -96,6 +94,12 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function ratings(): HasMany
     {
         return $this->hasMany(Rating::class);
+    }
+
+    public function savedCourses()
+    {
+        return $this->belongsToMany(Course::class, 'saved_courses')
+                    ->withTimestamps();
     }
 
     public function watchedVideos(): BelongsToMany

@@ -98,4 +98,28 @@ class QuizController extends Controller
             'passed' => $score >= ($quiz->passing_score ?? 60)
         ]);
     }
+
+    // Check quiz attempt status
+    public function checkAttemptStatus($courseId, $quizId)
+    {
+        $quiz = Quiz::where("course_id", $courseId)
+            ->findOrFail($quizId);
+
+        $latestAttempt = QuizAttempt::where('user_id', Auth::id())
+            ->where('quiz_id', $quizId)
+            ->where('status', 'completed') // Only consider completed attempts
+            ->latest()
+            ->first();
+
+        return response()->json([
+            'has_attempted' => (bool) $latestAttempt,
+            'latest_attempt' => $latestAttempt ? [
+                'score' => $latestAttempt->score,
+                'status' => $latestAttempt->status,
+                'completed_at' => $latestAttempt->completed_at,
+                'passed' => $latestAttempt->score >= ($quiz->passing_score ?? 60)
+            ] : null,
+            'can_submit' => !$latestAttempt // Can only submit if no completed attempt exists
+        ]);
+    }
 }
