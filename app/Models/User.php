@@ -71,13 +71,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 
     public function enrolledCourses(): BelongsToMany
     {
-        return $this->belongsToMany(Course::class, "course_user")
-            ->withPivot([
-                "enrolled_at",
-                "progress",
-                "videos_completed",
-                "completed_at"
-            ])
+        return $this->belongsToMany(Course::class, 'course_user')
+            ->withPivot(['progress', 'videos_completed', 'completed_at'])
             ->withTimestamps();
     }
 
