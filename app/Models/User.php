@@ -105,9 +105,13 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
             ->withPivot('watched_at');
     }
 
-
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
+    }
+
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class);
     }
 }

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\V1\{
     CategoryController,
+    CertificateController,
     CourseController,
     EnrollmentController,
     RatingController,
@@ -113,8 +114,11 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::post("quiz-attempts/{attempt}/complete", [QuizAttemptController::class, "complete"])->middleware("auth:sanctum");
     Route::post("quiz-attempts/{attempt}/results", [QuizAttemptController::class, "results"])->middleware("auth:sanctum");
 
+    //certificate
+    Route::post("/courses/{course}/certificate", [CertificateController::class, "generate"])->middleware("auth:sanctum");
+
     //updateUserInfo
-   
+
     Route::post("/profile", [UpdateUserInfoController::class, "updateProfile"])->middleware("auth:sanctum");
 });
 
