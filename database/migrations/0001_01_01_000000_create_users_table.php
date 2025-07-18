@@ -17,6 +17,9 @@ return new class extends Migration
             $table->enum('role', ['student', 'teacher', 'admin'])->default('student');
             $table->string('email')->unique();
             $table->string("profile_image")->nullable();
+            $table->string("specialization")->nullable();
+            $table->string("bio")->nullable();
+            $table->string("country")->nullable();
             $table->string('certificate_url')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

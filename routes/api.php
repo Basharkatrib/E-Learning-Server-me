@@ -11,6 +11,7 @@ use App\Http\Controllers\API\V1\{
     VideoWatchController,
     SavedCourseController,
     NoteController,
+    ContactMessageController,
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -129,6 +130,18 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     // Notes routes
     Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('notes', NoteController::class);
+    });
+});
+
+// Contact Messages Routes
+Route::prefix('v1')->group(function () {
+    Route::post('/contact', [ContactMessageController::class, 'store']);
+    
+    // Admin routes (protected)
+    Route::middleware(['auth:sanctum', 'verified'])->group(function () {
+        Route::get('/contact/messages', [ContactMessageController::class, 'index']);
+        Route::patch('/contact/messages/{message}/read', [ContactMessageController::class, 'markAsRead']);
+        Route::delete('/contact/messages/{message}', [ContactMessageController::class, 'destroy']);
     });
 });
 
