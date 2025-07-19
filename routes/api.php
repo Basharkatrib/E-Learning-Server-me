@@ -157,3 +157,5 @@ Route::middleware("auth:sanctum")->post("/notifications/read", function (Request
     $request->user()->unreadNotifications->markAsRead();
     return response()->noContent();
 });
+
+

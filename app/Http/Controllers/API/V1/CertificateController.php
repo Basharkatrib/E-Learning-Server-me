@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
-use App\Mail\CertificateIssued;
 use App\Models\{
     Certificate,
     Course,
@@ -12,9 +11,12 @@ use App\Models\{
 };
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CertificateIssued;
+use Illuminate\Support\Facades\Log;
 
 class CertificateController extends Controller
 {
@@ -22,64 +24,117 @@ class CertificateController extends Controller
     {
         $user = $req->user();
         $quiz = Quiz::with("course")->findOrFail($req->quiz_id);
-        $attempt = QuizAttempt::where("id", $req->attempt_id)
-            ->where("user_id", $user->id)
+        
+        // Get the latest completed attempt for this quiz
+        $attempt = QuizAttempt::where("user_id", $user->id)
             ->where("quiz_id", $quiz->id)
+            ->where("status", "completed")
+            ->latest()
             ->firstOrFail();
 
-        //  Check if attempt is completed
-        if ($attempt->status !== "completed") {
-            return response()->json([
-                "message" => "Quiz isn't completed yet!"
-            ], 400);
-        }
-
-        // Check if passing score is met
-        if ($quiz->passing_score && $attempt->score < $quiz->passing_score) {
-            return response()->json([
-                "message" => "Score didn't match the passing score",
-            ], 403);
-        }
-
         // Check if certificate already exists
-        $existing = Certificate::where("quiz_attempt_id", $attempt->id)->first();
+        $existing = Certificate::where("quiz_id", $quiz->id)
+            ->where("user_id", $user->id)
+            ->first();
+            
         if ($existing) {
             return response()->json([
                 "message" => "Certificate already issued.",
-                "certificateUrl" => asset("storage/{$existing->file_path}")
+                "certificateUrl" => $existing->file_path
             ]);
         }
 
-        //create the certificate
-        $certificateNumber = strtoupper(Str::random(10));
-        $issueDate = now();
+        try {
+            // Create certificate number
+            $certificateNumber = strtoupper(Str::random(10));
+            
+            // Generate PDF
+            $pdf = Pdf::loadView("certificates.template", [
+                "user" => $user,
+                "quiz" => $quiz,
+                "score" => $attempt->score,
+                "certificate_number" => $certificateNumber,
+                "issue_date" => now()
+            ]);
 
-        $certificate = Certificate::create([
-            "user_id" => $user->id,
-            "quiz_id" => $quiz->id,
-            "quiz_attempt_id" => $attempt->id,
-            "certificate_number" => $certificateNumber,
-            "issue_date" => $issueDate,
-        ]);
+            // Save PDF to temporary file
+            $tempPath = storage_path('app/temp/' . $certificateNumber . '.pdf');
+            if (!is_dir(dirname($tempPath))) {
+                mkdir(dirname($tempPath), 0755, true);
+            }
+            $pdf->save($tempPath);
 
-        //Generate PDF
-        $pdf = Pdf::loadView("certificates.template", [
-            "user" => $user,
-            "quiz" => $quiz,
-            "certificate" => $certificate,
-        ]);
+            // Create UploadedFile instance
+            $uploadedFile = new \Illuminate\Http\UploadedFile(
+                $tempPath,
+                $certificateNumber . '.pdf',
+                'application/pdf',
+                filesize($tempPath),
+                UPLOAD_ERR_OK,
+                true
+            );
 
-        $filePath = "certificates/{$certificateNumber}.pdf";
-        Storage::put("public/{$filePath}", $pdf->output());
+            // Store file in Cloudinary in the courses folder
+            $path = Storage::disk('cloudinary')->putFileAs(
+                'courses',
+                $uploadedFile,
+                $certificateNumber . '.pdf',
+                [
+                    'resource_type' => 'raw'
+                ]
+            );
 
-        $certificate->update(["file_path" => $filePath]);
+            // Get the secure URL with version number
+            $cloudName = env('CLOUDINARY_CLOUD_NAME');
+            $version = time(); // This will simulate the version number
+            $certificateUrl = "https://res.cloudinary.com/{$cloudName}/raw/upload/v{$version}/courses/{$certificateNumber}.pdf";
 
-        // Email the certificate
-        Mail::to($user->email)->send(new CertificateIssued($certificate));
+            // Create certificate record
+            $certificate = Certificate::create([
+                "user_id" => $user->id,
+                "quiz_id" => $quiz->id,
+                "quiz_attempt_id" => $attempt->id,
+                "certificate_number" => $certificateNumber,
+                "issue_date" => now(),
+                "file_path" => $certificateUrl
+            ]);
 
-        return response()->json([
-            "message" => "Certificate generated and emailed.",
-            "certificateUrl" => asset("storage/{$certificate->file_path}")
-        ]);
+            // Try to send email
+            try {
+                Mail::to($user->email)->send(new CertificateIssued($certificate));
+            } catch (\Exception $mailError) {
+                Log::error('Failed to send certificate email', [
+                    'error' => $mailError->getMessage(),
+                    'user_id' => $user->id,
+                    'email' => $user->email
+                ]);
+                // We don't throw the error here as the certificate is already generated
+            }
+
+            // Delete temporary file
+            if (file_exists($tempPath)) {
+                unlink($tempPath);
+            }
+
+            return response()->json([
+                "status" => "success",
+                "message" => "Certificate generated successfully.",
+                "data" => [
+                    "certificateUrl" => $certificateUrl,
+                    "certificate_number" => $certificateNumber
+                ]
+            ], 200);
+
+        } catch (\Exception $e) {
+            // Clean up temporary file if it exists
+            if (isset($tempPath) && file_exists($tempPath)) {
+                unlink($tempPath);
+            }
+
+            return response()->json([
+                "status" => "error",
+                "message" => "Error generating certificate. Please try again."
+            ], 500);
+        }
     }
 }
