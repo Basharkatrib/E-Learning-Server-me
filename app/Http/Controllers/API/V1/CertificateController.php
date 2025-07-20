@@ -57,6 +57,13 @@ class CertificateController extends Controller
                 "issue_date" => now()
             ]);
 
+            // تعيين إعدادات PDF المبسطة
+            $pdf->setPaper('a4', 'landscape');
+            $pdf->setOption('margin-top', '0mm');
+            $pdf->setOption('margin-right', '0mm');
+            $pdf->setOption('margin-bottom', '0mm');
+            $pdf->setOption('margin-left', '0mm');
+
             // Save PDF to temporary file
             $tempPath = storage_path('app/temp/' . $certificateNumber . '.pdf');
             if (!is_dir(dirname($tempPath))) {

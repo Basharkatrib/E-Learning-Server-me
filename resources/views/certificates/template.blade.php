@@ -1,148 +1,104 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Certificate of Completion</title>
     <style>
         @page {
             margin: 0;
+            padding: 0;
+            size: A4 landscape;
         }
-        body {
-            font-family: 'Arial', sans-serif;
-            text-align: center;
+        * {
             margin: 0;
             padding: 0;
-            background: #ffffff;
+            box-sizing: border-box;
         }
-        .certificate {
-            position: relative;
+        body {
             width: 100%;
             height: 100vh;
-            padding: 40px;
-            box-sizing: border-box;
-            background: #ffffff;
+            position: relative;
+            font-family: Arial, sans-serif;
         }
-        .border {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            right: 20px;
-            bottom: 20px;
-            border: 2px solid #c4a962;
-            border-radius: 5px;
+        .certificate-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
         }
-        .inner-border {
-            position: absolute;
-            top: 30px;
-            left: 30px;
-            right: 30px;
-            bottom: 30px;
-            border: 5px solid #c4a962;
-            border-radius: 2px;
+        .certificate {
+            width: 100%;
+            height: 100%;
+            background-image: url('{{ public_path('images/certificate_template.png') }}');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
         }
         .content {
-            position: relative;
-            z-index: 1;
-            padding: 50px;
-            margin-top: 40px;
-        }
-        h1 {
-            font-size: 48px;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            font-weight: bold;
-            text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
-        }
-        .intro {
-            font-size: 20px;
-            color: #666;
-            margin-bottom: 10px;
+            position: absolute;
+            top: 55%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            text-align: center;
         }
         .name {
-            font-size: 36px;
+            font-size: 50px;
             font-weight: bold;
-            color: #c4a962;
-            margin: 20px 0;
+            color: #2c3e50;
+            margin-bottom: 15px;
             text-transform: uppercase;
-            letter-spacing: 2px;
         }
         .course {
-            font-size: 28px;
+            font-size: 40px;
             color: #2c3e50;
-            margin: 20px 0;
-            font-weight: bold;
+            margin-bottom: 10px;
         }
         .score {
-            font-size: 24px;
-            color: #27ae60;
-            margin: 25px 0;
-            font-weight: bold;
+            font-size: 35px;
+            color: #6D28D9;
+            margin-bottom: 10px;
         }
-        .date {
+        .bottom-content {
+            position: absolute;
+            bottom: 140px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 0 100px;
+            left: 150px;
+        }
+        .date, .signature {
             font-size: 18px;
-            color: #666;
-            margin: 20px 0;
+            color: #2c3e50;
         }
         .certificate-number {
             position: absolute;
-            bottom: 40px;
-            left: 0;
-            right: 0;
+            bottom: 130px;
+            width: 100%;
+            text-align: center;
             font-size: 14px;
             color: #666;
-        }
-        .watermark {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 130px;
-            color: rgba(196, 169, 98, 0.05);
-            z-index: 0;
-            pointer-events: none;
-            text-transform: uppercase;
-            letter-spacing: 10px;
-        }
-        .seal {
-            position: absolute;
-            bottom: 80px;
-            right: 80px;
-            width: 120px;
-            height: 120px;
-            border: 4px solid #c4a962;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: #c4a962;
-            transform: rotate(-15deg);
         }
     </style>
 </head>
 <body>
-    <div class="certificate">
-        <div class="border"></div>
-        <div class="inner-border"></div>
-        <div class="watermark">Certificate</div>
-        
-        <div class="content">
-            <h1>Certificate of Completion</h1>
-            <div class="intro">This is to certify that</div>
-            <div class="name">{{ $user->name }}</div>
-            <div class="intro">has successfully completed the quiz in the course</div>
-            <div class="course">{{ $quiz->course->title }}</div>
-            <div class="score">Final Score: {{ $score }}%</div>
-            <div class="date">Issued on {{ \Carbon\Carbon::parse($issue_date)->format('F d, Y') }}</div>
-            
-            <div class="seal">
-                VERIFIED
+    <div class="certificate-container">
+        <div class="certificate">
+            <div class="content">
+                <div class="name">{{ $user->name }}</div>
+                <div class="course">{{ $quiz->course->title }}</div>
+                <div class="score">Final Score: {{ $score }}%</div>
             </div>
-        </div>
-        
-        <div class="certificate-number">
-            Certificate Number: {{ $certificate_number }}
+            
+            <div class="bottom-content">
+                <div class="date">{{ \Carbon\Carbon::parse($issue_date)->format('F d, Y') }}</div>
+            </div>
+            
+            <div class="certificate-number">
+                Certificate Number: {{ $certificate_number }}
+            </div>
         </div>
     </div>
 </body>
