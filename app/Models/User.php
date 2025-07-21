@@ -32,6 +32,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         "bio",
         "country",
         'role',
+        'google_id',
+        'email_verified_at',
     ];
 
     /**

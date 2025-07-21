@@ -10,8 +10,9 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Traits\HasRoleBasedAccess;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Livewire\TemporaryUploadedFile;
+use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class CourseResource extends Resource
 {
@@ -93,6 +94,14 @@ class CourseResource extends Resource
                         'ar' => 'Arabic',
                     ])
                     ->required(),
+                    Forms\Components\TextInput::make('link')
+                    ->label('Link'),
+                    Forms\Components\TextInput::make('document_url')
+                    ->label('Course PDF URL')
+                    ->url()
+                    ->prefix('https://')
+                    ->placeholder('Enter PDF URL from Cloudinary')
+                    ->helperText('Enter the full URL of the PDF file from Cloudinary')
             ]);
     }
 
