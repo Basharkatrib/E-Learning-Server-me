@@ -26,6 +26,9 @@ use App\Http\Controllers\Auth\{
     VerifyEmailController,
 };
 
+// Apply JSON response middleware to all API routes
+Route::middleware(['json.response'])->group(function () {
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -99,7 +102,7 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     });
 
     //enrollments routes
-    Route::post("/courses/{course}/enroll", [EnrollmentController::class, "enroll"])->middleware(["auth:sanctum", "verified"]);
+    Route::post("/courses/{course}/enroll", [EnrollmentController::class, "enroll"])->middleware("auth:sanctum");
     Route::delete("/courses/{course}/unenroll", [EnrollmentController::class, "unenroll"])->middleware("auth:sanctum");
     Route::get("/courses/{course}/enrollments", [EnrollmentController::class, "enrolledUsers"])->middleware("auth:sanctum");
     Route::get("/users/{user}/enrollments", [EnrollmentController::class, "userEnrollments"])->middleware("auth:sanctum");
@@ -161,5 +164,7 @@ Route::middleware("auth:sanctum")->post("/notifications/read", function (Request
 // Google Login Routes
 Route::get('/auth/google', [SessionController::class, 'redirectToGoogle']);
 Route::get('/auth/google/call-back', [SessionController::class, 'handleGoogleCallback']);
+
+}); // End of json.response middleware group
 
 
