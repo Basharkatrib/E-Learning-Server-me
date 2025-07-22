@@ -23,6 +23,10 @@ class EnrollmentController extends Controller
             return response()->json(['message' => 'Unauthenticated'], 401);
         }
 
+        if (is_null($user->email_verified_at)) {
+            return response()->json(['message' => 'Email not verified'], 402);
+        }
+
         if ($user->role !== "student") {
             return response()->json(["message" => "Only students can enroll"], 403);
         }
