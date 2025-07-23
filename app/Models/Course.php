@@ -21,7 +21,13 @@ class Course extends Model
         "difficulty_level",
         "default_language",
         "thumbnail_url",
-        "duration"
+        "duration",
+        "link",
+        "document_url"
+    ];
+
+    protected $casts = [
+        'document_url' => 'string',
     ];
 
     public $translatable = ["description", "title", "duration"];

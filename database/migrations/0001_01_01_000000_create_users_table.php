@@ -16,13 +16,14 @@ return new class extends Migration
             $table->string('name');
             $table->enum('role', ['student', 'teacher', 'admin'])->default('student');
             $table->string('email')->unique();
+            $table->string('google_id')->nullable();
             $table->string("profile_image")->nullable();
             $table->string("specialization")->nullable();
             $table->string("bio")->nullable();
             $table->string("country")->nullable();
             $table->string('certificate_url')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

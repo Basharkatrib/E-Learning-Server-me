@@ -26,6 +26,9 @@ use App\Http\Controllers\Auth\{
     VerifyEmailController,
 };
 
+// Apply JSON response middleware to all API routes
+Route::middleware(['json.response'])->group(function () {
+
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -157,3 +160,11 @@ Route::middleware("auth:sanctum")->post("/notifications/read", function (Request
     $request->user()->unreadNotifications->markAsRead();
     return response()->noContent();
 });
+
+// Google Login Routes
+Route::get('/auth/google', [SessionController::class, 'redirectToGoogle']);
+Route::get('/auth/google/call-back', [SessionController::class, 'handleGoogleCallback']);
+
+}); // End of json.response middleware group
+
+

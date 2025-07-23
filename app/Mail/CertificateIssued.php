@@ -30,7 +30,7 @@ class CertificateIssued extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Certificate Issued',
+            subject: 'Congratulations! Your Course Certificate is Ready',
         );
     }
 
@@ -40,15 +40,12 @@ class CertificateIssued extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: "emails.certificate_issued",
+            view: 'emails.certificate_issued',
+            with: [
+                'certificate' => $this->certificate,
+                'downloadUrl' => $this->certificate->file_path
+            ]
         );
-    }
-
-    public function build()
-    {
-        return $this->subject("Your Certificate of Completion")
-            ->view("emails.certificate_issued")
-            ->attach(storage_path("app/public/{$this->certificate->file_path}"));
     }
 
     /**
