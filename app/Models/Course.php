@@ -23,7 +23,8 @@ class Course extends Model
         "thumbnail_url",
         "duration",
         "link",
-        "document_url"
+        "document_url",
+        "is_sequential",
     ];
 
     protected $casts = [
