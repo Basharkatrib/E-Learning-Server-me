@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\QuizResource;
+use App\Models\Course;
 use App\Models\Option;
 use App\Models\Question;
 use App\Models\Quiz;
@@ -14,11 +15,11 @@ use Illuminate\Support\Facades\Auth;
 
 class QuizAttemptController extends Controller
 {
-    public function start(Request $req, $courseId, $quizId)
+    public function start(Request $req, Course $course)
     {
         //check if the user is enrolled and has completed all videos
         if (!Auth::user()->enrolledCourses()
-            ->where("course_id", $courseId)
+            ->where("course_id", $course->id)
             ->where("videos_completed", true)
             ->exists()) {
             return response()->json([
@@ -26,28 +27,27 @@ class QuizAttemptController extends Controller
             ], 403);
         }
 
-        $quiz = Quiz::where("course_id", $courseId)
-            ->where("id", $quizId)
-            ->firstOrFail();
+        // Get the quiz associated with this course
+        $quiz = $course->quiz()->firstOrFail();
 
         // Check for existing incomplete attempt
         $existingAttempt = QuizAttempt::where("user_id", Auth::id())
-            ->where("quiz_id", $quizId)
+            ->where("quiz_id", $quiz->id)
             ->where("status", "in_progress")
             ->first();
 
         if ($existingAttempt) {
             return response()->json([
                 "message" => "You have an existing attempt in progress",
-                "attemptId" => $existingAttempt->id
+                "attemptId" => $existingAttempt->id,
             ]);
         }
 
         $attempt = QuizAttempt::create([
             "user_id" => Auth::id(),
-            "quiz_id" => $quizId,
+            "quiz_id" => $quiz->id,
             "started_at" => now(),
-            "status" => "in_progress"
+            "status" => "in_progress",
         ]);
 
         $quiz->load("questions.options");
@@ -68,34 +68,34 @@ class QuizAttemptController extends Controller
             return response()->json(["message" => "This attempt is no longer in progress"], 400);
         }
 
-         $validated = $req->validate([
-        "answers" => ["required", "array"],
-        "answers.*.question_id" => ["required", "exists:questions,id"],
-        "answers.*.option_id" => ["nullable", "exists:options,id"],
-    ]);
+        $validated = $req->validate([
+            "answers" => ["required", "array"],
+            "answers.*.question_id" => ["required", "exists:questions,id"],
+            "answers.*.option_id" => ["nullable", "exists:options,id"],
+        ]);
 
-    foreach ($validated["answers"] as $answer) {
-        $question = Question::find($answer["question_id"]);
-        $isCorrect = false;
-        $pointsEarned = 0;
+        foreach ($validated["answers"] as $answer) {
+            $question = Question::find($answer["question_id"]);
+            $isCorrect = false;
+            $pointsEarned = 0;
 
-        if (in_array($question->question_type, ["multiple_choice", "true_false"])) {
-            $selectedOption = Option::find($answer["option_id"]);
-            $isCorrect = $selectedOption ? $selectedOption->is_correct : false;
-            $pointsEarned = $isCorrect ? $question->points : 0;
+            if (in_array($question->question_type, ["multiple_choice", "true_false"])) {
+                $selectedOption = Option::find($answer["option_id"]);
+                $isCorrect = $selectedOption ? $selectedOption->is_correct : false;
+                $pointsEarned = $isCorrect ? $question->points : 0;
+            }
+
+            UserAnswer::updateOrCreate([
+                "quiz_attempt_id" => $attemptId,
+                "question_id" => $answer["question_id"]
+            ], [
+                "option_id" => $answer["option_id"] ?? null,
+                "is_correct" => $isCorrect,
+                "points_earned" => $pointsEarned,
+            ]);
         }
 
-        UserAnswer::updateOrCreate([
-            "quiz_attempt_id" => $attemptId,
-            "question_id" => $answer["question_id"]
-        ], [
-            "option_id" => $answer["option_id"] ?? null,
-            "is_correct" => $isCorrect,
-            "points_earned" => $pointsEarned,
-        ]);
-    }
-
-    return response()->json(["message" => "Answers submitted successfully"]);
+        return response()->json(["message" => "Answers submitted successfully"]);
     }
 
     public function complete(Request $req, $attemptId)
