@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string("link")->nullable();
             $table->string("document_url")->nullable();
             $table->string('default_language');
-            $table->boolean("is_sequential");
+            $table->boolean("is_sequential")->default(false);
             $table->timestamps();
         });
     }
