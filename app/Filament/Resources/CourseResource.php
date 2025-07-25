@@ -65,6 +65,9 @@ class CourseResource extends Resource
                         'advanced' => 'Advanced',
                     ])
                     ->required(),
+                Forms\Components\Toggle::make('is_sequential')
+                    ->label('Is Sequential')
+                    ->default(false),
                 Forms\Components\FileUpload::make('thumbnail_url')
                     ->label('Image')
                     ->image()
