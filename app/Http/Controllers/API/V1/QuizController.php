@@ -33,21 +33,13 @@ class QuizController extends Controller
     // Get a specific quiz with its questions
     public function show($courseId, $quizId)
     {
-        // Check if user has already attempted this quiz
-        if ($this->hasAttemptedQuiz($quizId)) {
-            return response()->json([
-                'error' => 'لقد قمت بإجراء هذا الاختبار مسبقاً',
-                'has_attempted' => true
-            ], 403);
-        }
-
         $quiz = Quiz::with(["questions.options"])
             ->where("course_id", $courseId)
             ->findOrFail($quizId);
 
         return response()->json([
             'quiz' => $quiz,
-            'has_attempted' => false
+            'has_attempted' => $this->hasAttemptedQuiz($quizId)
         ]);
     }
 
@@ -73,15 +65,36 @@ class QuizController extends Controller
             'completed_at' => now()
         ]);
 
-        // Calculate score
+        
+
+        // Calculate score and store user answers
         $totalQuestions = $quiz->questions()->count();
         $correctAnswers = 0;
 
         foreach ($request->answers as $questionId => $answerId) {
             $question = $quiz->questions()->find($questionId);
-            if ($question && $question->options()->where('id', $answerId)->where('is_correct', true)->exists()) {
+            $option = $question ? $question->options()->find($answerId) : null;
+            $isCorrect = $option ? $option->is_correct : false;
+            $pointsEarned = $isCorrect ? 1 : 0;
+            
+            if ($isCorrect) {
                 $correctAnswers++;
             }
+
+            // Store user answer in user_answers table
+            \App\Models\UserAnswer::updateOrCreate(
+                [
+                    'user_id' => Auth::id(),
+                    'quiz_attempt_id' => $attempt->id,
+                    'question_id' => $questionId,
+                ],
+                [
+                    'option_id' => $answerId,
+                    'is_correct' => $isCorrect,
+                    'points_earned' => $pointsEarned,
+                    'answered_at' => now()
+                ]
+            );
         }
 
         $score = ($correctAnswers / $totalQuestions) * 100;
@@ -95,7 +108,8 @@ class QuizController extends Controller
             'score' => $score,
             'total_questions' => $totalQuestions,
             'correct_answers' => $correctAnswers,
-            'passed' => $score >= ($quiz->passing_score ?? 60)
+            'passed' => $score >= ($quiz->passing_score ?? 60),
+            'attemptId' => $attempt->id
         ]);
     }
 
@@ -114,6 +128,7 @@ class QuizController extends Controller
         return response()->json([
             'has_attempted' => (bool) $latestAttempt,
             'latest_attempt' => $latestAttempt ? [
+                'id' => $latestAttempt->id,
                 'score' => $latestAttempt->score,
                 'status' => $latestAttempt->status,
                 'completed_at' => $latestAttempt->completed_at,

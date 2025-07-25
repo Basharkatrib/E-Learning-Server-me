@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Course extends Model
 {
@@ -22,7 +23,8 @@ class Course extends Model
         "thumbnail_url",
         "duration",
         "link",
-        "document_url"
+        "document_url",
+        "is_sequential",
     ];
 
     protected $casts = [
@@ -81,5 +83,9 @@ class Course extends Model
     public function benefits()
     {
         return $this->hasMany(BenefitsCourse::class)->orderBy('order');
+    }
+
+    public function quiz():HasOne {
+        return $this->hasOne(Quiz::class);
     }
 }
