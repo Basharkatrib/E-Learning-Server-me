@@ -23,6 +23,16 @@ class SessionController extends Controller
         // Get the authenticated user
         $user = Auth::user();
 
+        // Check if email is verified
+        if (!$user->email_verified_at) {
+            Auth::logout();
+            return response()->json([
+                'message' => 'Please verify your email address before logging in.',
+                'email_verification_required' => true,
+                'email' => $user->email
+            ], 403);
+        }
+
         // Create a new token
         $token = $user->createToken("auth_token")->plainTextToken;
 
