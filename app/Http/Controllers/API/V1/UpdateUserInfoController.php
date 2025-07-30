@@ -14,15 +14,24 @@ class UpdateUserInfoController extends Controller
         $user = $req->user();
 
         $req->validate([
-            "name" => ["sometimes", "string", "max:255"],
+            "firstName" => ["sometimes", "string", "max:255"],
+            "lastName" => ["sometimes", "string", "max:255"],
+            "phoneNumber" => ["sometimes", "string"],
             "profile_image" => ["sometimes", "image", "mimes:jpeg,jpg,png,webp", "max:4096"],
             "specialization" => ["sometimes", "string", "max:255"],
             "bio" => ["sometimes", "string", "max:255"],
             "country" => ["sometimes", "string", "max:255"],
         ]);
 
-        if ($req->filled("name")) {
-            $user->name = $req->name;
+        if ($req->filled("firstName")) {
+            $user->first_name = $req->firstName;
+        }
+
+        if ($req->filled("lastName")) {
+            $user->last_name = $req->lastName;
+        }
+        if ($req->filled("phoneNumber")) {
+            $user->phone_number = $req->phoneNumber;
         }
 
         if ($req->hasFile("profile_image")) {
@@ -52,7 +61,11 @@ class UpdateUserInfoController extends Controller
             "message" => "Profile updated successfully",
             "user" => [
                 "userId" => $user->id,
-                "userName" => $user->name,
+                "userName" => [
+                    "firstName" => $user->first_name,
+                    "lastName" => $user->last_name,
+                ],
+                "phoneNumber" => $user->phone_number,
                 "userProfileImage" => $user->profile_image,
                 "userSpecialization" => $user->specialization,
                 "userBio" => $user->bio,

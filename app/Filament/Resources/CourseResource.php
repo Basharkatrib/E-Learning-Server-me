@@ -56,7 +56,15 @@ class CourseResource extends Resource
                     ->label('Duration')
                     ->suffix(' minutes')
                     ->required()
-                    ->numeric(),
+                    ->numeric()
+                    ->minValue(0),
+                Forms\Components\TextInput::make("price")
+                    ->label("price")
+                    ->prefix('$')
+                    ->numeric()
+                    ->required()
+                    ->default(0)
+                    ->minValue(0),
                 Forms\Components\Select::make('difficulty_level')
                     ->label('Difficulty Level')
                     ->options([
@@ -76,7 +84,7 @@ class CourseResource extends Resource
                     ->visibility('public')
                     ->maxSize(5120)
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/jpg'])
-                    ->required()
+                    /* ->required() */
                     ->columnSpanFull()
                     ->preserveFilenames()
                     ->dehydrateStateUsing(function ($state) {
@@ -97,9 +105,9 @@ class CourseResource extends Resource
                         'ar' => 'Arabic',
                     ])
                     ->required(),
-                    Forms\Components\TextInput::make('link')
+                Forms\Components\TextInput::make('link')
                     ->label('Link'),
-                    Forms\Components\TextInput::make('document_url')
+                Forms\Components\TextInput::make('document_url')
                     ->label('Course PDF URL')
                     ->url()
                     ->prefix('https://')
@@ -130,6 +138,10 @@ class CourseResource extends Resource
                         return $state;
                     })
                     ->searchable(),
+                Tables\Columns\TextColumn::make("price")
+                    ->label("Price")
+                    ->prefix("$")
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('duration')
                     ->label('Duration')
                     ->suffix(' minutes')
@@ -137,13 +149,13 @@ class CourseResource extends Resource
                 Tables\Columns\TextColumn::make('difficulty_level')
                     ->label('Difficulty Level')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->formatStateUsing(fn($state) => match ($state) {
                         'beginner' => 'Beginner',
                         'intermediate' => 'Intermediate',
                         'advanced' => 'Advanced',
                         default => $state,
                     })
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         'beginner' => 'success',
                         'intermediate' => 'warning',
                         'advanced' => 'danger',
@@ -157,7 +169,7 @@ class CourseResource extends Resource
                     ->columnSpanFull(),
                 Tables\Columns\TextColumn::make('default_language')
                     ->label('Default Language')
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->formatStateUsing(fn($state) => match ($state) {
                         'ar' => 'Arabic',
                         'en' => 'English',
                         default => $state,

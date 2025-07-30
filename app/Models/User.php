@@ -23,8 +23,9 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
      * @var list<string>
      */
     protected $fillable = [
-        'first_name',
-        'last_name',
+        "first_name",
+        "last_name",
+        "phone_number",
         'email',
         'password',
         "profile_image",
@@ -102,7 +103,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function savedCourses()
     {
         return $this->belongsToMany(Course::class, 'saved_courses')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     public function watchedVideos(): BelongsToMany
