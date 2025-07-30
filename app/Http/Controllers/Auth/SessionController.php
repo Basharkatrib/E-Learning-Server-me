@@ -40,7 +40,9 @@ class SessionController extends Controller
             'message' => 'Login successful',
             'user' => [
                 'id' => $user->id,
-                'name' => $user->name,
+                'firstName' => $user->first_name,
+                'lastName' => $user->last_name,
+                'phoneNumber' => $user->phone_number,
                 'email' => $user->email,
                 'profile_image' => $user->profile_image,
                 'email_verified_at' => $user->email_verified_at,
@@ -87,7 +89,8 @@ class SessionController extends Controller
 
             if (!$user) {
                 $user = User::create([
-                    'name' => $googleUser->name,
+                    'firstName' => $googleUser->name,
+                    'lastName' => $googleUser->name,
                     'email' => $googleUser->email,
                     'google_id' => $googleUser->id,
                     'password' => bcrypt(Str::random(16)),
@@ -107,7 +110,9 @@ class SessionController extends Controller
             // Prepare user data
             $userData = [
                 'id' => $user->id,
-                'name' => $user->name,
+                'firstName' => $user->first_name,
+                'lastName' => $user->last_name,
+                'phoneNumber' => $user->phone_number,
                 'email' => $user->email,
                 'profile_image' => $user->profile_image,
                 'email_verified_at' => $user->email_verified_at,
