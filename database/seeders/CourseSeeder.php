@@ -34,7 +34,8 @@ class CourseSeeder extends Seeder
                         "ar" => "40 ساعة"
                     ],
                     "level" => "beginner",
-                    "thumbnail" => "https://images.unsplash.com/photo-1585247226801-bc613c441316?q=80&w=1480&auto=format&fit=crop"
+                    "thumbnail" => "https://images.unsplash.com/photo-1585247226801-bc613c441316?q=80&w=1480&auto=format&fit=crop",
+                    "price" => rand(5, 10) - 0.01,
                 ],
                 [
                     "title" => [
@@ -46,7 +47,8 @@ class CourseSeeder extends Seeder
                         "ar" => "25 ساعة"
                     ],
                     "level" => "intermediate",
-                    "thumbnail" => "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1470&auto=format&fit=crop"
+                    "thumbnail" => "https://images.unsplash.com/photo-1633356122544-f134324a6cee?q=80&w=1470&auto=format&fit=crop",
+                    "price" => rand(5, 10) - 0.01,
                 ],
             ],
             "Mobile Development" => [
@@ -60,7 +62,8 @@ class CourseSeeder extends Seeder
                         "ar" => "30 ساعة"
                     ],
                     "level" => "intermediate",
-                    "thumbnail" => "https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?q=80&w=1470&auto=format&fit=crop"
+                    "thumbnail" => "https://images.unsplash.com/photo-1555774698-0b77e0d5fac6?q=80&w=1470&auto=format&fit=crop",
+                    "price" => rand(5, 10) - 0.01,
                 ],
             ],
             "Data Science" => [
@@ -74,7 +77,8 @@ class CourseSeeder extends Seeder
                         "ar" => "25 ساعة"
                     ],
                     "level" => "beginner",
-                    "thumbnail" => "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1470&auto=format&fit=crop"
+                    "thumbnail" => "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=1470&auto=format&fit=crop",
+                    "price" => rand(5, 10) - 0.01,
                 ],
             ],
             // Business
@@ -89,7 +93,8 @@ class CourseSeeder extends Seeder
                         "ar" => "10 ساعات"
                     ],
                     "level" => "beginner",
-                    "thumbnail" => "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1470&auto=format&fit=crop"
+                    "thumbnail" => "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1470&auto=format&fit=crop",
+                    "price" => rand(5, 10) - 0.01,
                 ],
             ],
             // Design
@@ -104,7 +109,8 @@ class CourseSeeder extends Seeder
                         "ar" => "20 ساعة"
                     ],
                     "level" => "beginner",
-                    "thumbnail" => "https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=1470&auto=format&fit=crop"
+                    "thumbnail" => "https://images.unsplash.com/photo-1516116216624-53e697fedbea?q=80&w=1470&auto=format&fit=crop",
+                    "price" => rand(5, 10) - 0.01,
                 ],
             ],
             // Marketing
@@ -119,7 +125,8 @@ class CourseSeeder extends Seeder
                         "ar" => "12 ساعة"
                     ],
                     "level" => "beginner",
-                    "thumbnail" => "https://images.unsplash.com/photo-1557838923-2985c318be48?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    "thumbnail" => "https://images.unsplash.com/photo-1557838923-2985c318be48?q=80&w=1631&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "price" => rand(5, 10) - 0.01,
                 ],
             ],
             // IT & Software
@@ -134,7 +141,8 @@ class CourseSeeder extends Seeder
                         "ar" => "15 ساعة"
                     ],
                     "level" => "beginner",
-                    "thumbnail" => "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1470&auto=format&fit=crop"
+                    "thumbnail" => "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=1470&auto=format&fit=crop",
+                    "price" => rand(5, 10) - 0.01,
                 ],
             ],
             // Personal Development
@@ -149,7 +157,8 @@ class CourseSeeder extends Seeder
                         "ar" => "6 ساعات"
                     ],
                     "level" => "beginner",
-                    "thumbnail" => "https://images.unsplash.com/photo-1694905472184-dcfab2382ced?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    "thumbnail" => "https://images.unsplash.com/photo-1694905472184-dcfab2382ced?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+                    "price" => rand(5, 10) - 0.01,
                 ],
             ],
             // Language Learning
@@ -164,7 +173,8 @@ class CourseSeeder extends Seeder
                         "ar" => "30 ساعة"
                     ],
                     "level" => "beginner",
-                    "thumbnail" => "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=1471&auto=format&fit=crop"
+                    "thumbnail" => "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=1471&auto=format&fit=crop",
+                    "price" => rand(5, 10) - 0.01,
                 ],
             ],
         ];
@@ -189,6 +199,7 @@ class CourseSeeder extends Seeder
                     "difficulty_level" => $template["level"],
                     "thumbnail_url" => $template["thumbnail"],
                     "default_language" => $this->getDefaultLanguage($subcategory->parent->name),
+                    "price" => $template["price"],
                 ]);
                 $coursesCreated++;
             }

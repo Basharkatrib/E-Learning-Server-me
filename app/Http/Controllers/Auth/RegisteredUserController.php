@@ -20,7 +20,9 @@ class RegisteredUserController extends Controller
     public function store(Request $request): JsonResponse
     {
         $request->validate([
-            "name" => ["required", "string", "max:255"],
+            "firstName" => ["required", "string", "max:255"],
+            "lastName" => ["required", "string", "max:255"],
+            "phoneNumber" => ["required", "string"],
             "email" => ["required", "email", "unique:users,email"],
             "password" => ["required", "confirmed", "min:8"],
             "certificate" => ["nullable", "file", "mimes:pdf,jpg,jpeg,png", "max:10240"],
@@ -34,7 +36,9 @@ class RegisteredUserController extends Controller
         }
 
         $user = User::create([
-            "name" => $request->input('name'),
+            "first_name" => $request->input("firstName"),
+            "last_name" => $request->input("lastName"),
+            "phone_number" => $request->input("phoneNumber"),
             "email" => $request->input('email'),
             "password" => Hash::make($request->input('password')),
             "certificate_url" => $certificateUrl,

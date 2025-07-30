@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('duration')->nullable();
             $table->enum("difficulty_level", ["beginner", "intermediate", "advanced"]);
             $table->string("thumbnail_url");
+            $table->decimal("price", 8, 2)->nullable();
             $table->string("link")->nullable();
             $table->string("document_url")->nullable();
             $table->string('default_language');

@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->enum('role', ['student', 'teacher', 'admin'])->default('student');
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string("phone_number")->nullable()->unique();
             $table->string('email')->unique();
             $table->string('google_id')->nullable();
             $table->string("profile_image")->nullable();
@@ -24,6 +25,7 @@ return new class extends Migration
             $table->string('certificate_url')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
+            $table->enum("role", ["student", "teacher", "employee", "admin"])->default("student");
             $table->rememberToken();
             $table->timestamps();
         });
