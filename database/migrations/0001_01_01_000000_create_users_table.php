@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->enum('role', ['student', 'teacher', 'admin'])->default('student');
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->enum('role', ['student', 'teacher','employee', 'admin'])->default('student');
             $table->string('email')->unique();
             $table->string('google_id')->nullable();
             $table->string("profile_image")->nullable();

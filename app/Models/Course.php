@@ -21,6 +21,7 @@ class Course extends Model
         "difficulty_level",
         "default_language",
         "thumbnail_url",
+        "price",
         "duration",
         "link",
         "document_url",
