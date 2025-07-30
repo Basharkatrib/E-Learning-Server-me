@@ -124,7 +124,7 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     //user attempt
     Route::post("courses/{course}/quiz/attempts", [QuizAttemptController::class, "start"])->middleware("auth:sanctum");
 
-    Route::post("quiz-attempts/{attempt}/answers", [QuizAttemptController::class, "submitAnswer"])->middleware("auth:sanctum");
+    // Route::post("quiz-attempts/{attempt}/answers", [QuizAttemptController::class, "submitAnswer"])->middleware("auth:sanctum");
     Route::post("quiz-attempts/{attempt}/complete", [QuizAttemptController::class, "complete"])->middleware("auth:sanctum");
     Route::post("quiz-attempts/{attempt}/results", [QuizAttemptController::class, "results"])->middleware("auth:sanctum");
 
