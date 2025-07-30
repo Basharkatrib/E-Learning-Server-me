@@ -90,7 +90,6 @@ class SessionController extends Controller
             if (!$user) {
                 $user = User::create([
                     'first_name' => $googleUser->name,
-                    'last_name' => $googleUser->name,
                     'phone_number' => $googleUser->phone,
                     'email' => $googleUser->email,
                     'google_id' => $googleUser->id,
