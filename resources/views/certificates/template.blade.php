@@ -29,7 +29,16 @@
         .certificate {
             width: 100%;
             height: 100%;
-            background-image: url('{{ public_path('images/certificate_template.png') }}');
+            background-image: url('{{ public_path('images/certeficate_template.png') }}');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+        .certificate2 {
+            width: 100%;
+            height: 100%;
+            background-image: url('{{ public_path('images/certeficate_template2.png') }}');
             background-size: contain;
             background-position: center;
             background-repeat: no-repeat;
@@ -37,7 +46,7 @@
         }
         .content {
             position: absolute;
-            top: 55%;
+            top: 48%;
             left: 50%;
             transform: translate(-50%, -50%);
             width: 100%;
@@ -62,44 +71,42 @@
         }
         .bottom-content {
             position: absolute;
-            bottom: 140px;
+            top: 55%;
             width: 100%;
-            display: flex;
-            justify-content: space-between;
+            left: -9%;
             padding: 0 100px;
-            left: 150px;
-        }
-        .date, .signature {
-            font-size: 18px;
-            color: #2c3e50;
-        }
-        .certificate-number {
-            position: absolute;
-            bottom: 130px;
-            width: 100%;
+            font-size: 25px;
             text-align: center;
-            font-size: 14px;
-            color: #666;
         }
+      
     </style>
 </head>
 <body>
     <div class="certificate-container">
-        <div class="certificate">
-            <div class="content">
-                <div class="name">{{ $user->name }}</div>
-                <div class="course">{{ $quiz->course->title }}</div>
-                <div class="score">Final Score: {{ $score }}%</div>
+        @if($score < 70)
+            <div class="certificate">
+                <div class="content">
+                    <div class="name">{{ $user->first_name }} {{ $user->last_name }}</div>
+                </div>
+                <div class="bottom-content">
+                    <i>
+                       This certificate is presented to the student who has attended {{ $quiz->course->duration }} <br/> out of  {{ $quiz->course->duration }} in the <b>{{ $quiz->course->title }}</b> course.
+                    </i>
+                </div>
             </div>
-            
-            <div class="bottom-content">
-                <div class="date">{{ \Carbon\Carbon::parse($issue_date)->format('F d, Y') }}</div>
+        @else
+            <div class="certificate2">
+                <div class="content">
+                    <div class="name">{{ $user->first_name }} {{ $user->last_name }}</div>
+                </div>
+                <div class="bottom-content">
+                    <i>
+                       This certificate is presented to the student who has attended {{ $quiz->course->duration }} <br/> out of  {{ $quiz->course->duration }} in the <b>{{ $quiz->course->title }}</b> course <br /> and passed the final exam with a score of {{ $score }}%.
+                    </i>
+                </div>
             </div>
-            
-            <div class="certificate-number">
-                Certificate Number: {{ $certificate_number }}
-            </div>
-        </div>
+        @endif
+       
     </div>
 </body>
 </html>
