@@ -11,8 +11,9 @@ use Laravel\Sanctum\HasApiTokens;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Filament\Models\Contracts\HasName;
 
-class User extends Authenticatable implements MustVerifyEmail, FilamentUser
+class User extends Authenticatable implements MustVerifyEmail, FilamentUser, HasName
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
@@ -121,5 +122,10 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function certificates(): HasMany
     {
         return $this->hasMany(Certificate::class);
+    }
+
+    public function getFilamentName(): string
+    {
+        return $this->first_name . ' ' . $this->last_name;
     }
 }
