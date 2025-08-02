@@ -10,9 +10,12 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Form;
+use App\Filament\Traits\HasRoleBasedAccess;
 
 class QuizResource extends Resource
 {
+    use HasRoleBasedAccess;
+    
     protected static ?string $model = Quiz::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
@@ -30,7 +33,13 @@ class QuizResource extends Resource
                 Forms\Components\Section::make('Quiz Details')
                     ->schema([
                         Forms\Components\Select::make('course_id')
-                            ->relationship('course', 'title')
+                            ->relationship('course', 'title', function (Builder $query) {
+                                $user = auth()->user();
+                                if ($user && $user->role === 'teacher') {
+                                    return $query->where('user_id', $user->id);
+                                }
+                                return $query;
+                            })
                             ->required()
                             ->searchable()
                             ->preload(),
@@ -160,7 +169,13 @@ class QuizResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('course')
-                    ->relationship('course', 'title')
+                    ->relationship('course', 'title', function (Builder $query) {
+                        $user = auth()->user();
+                        if ($user && $user->role === 'teacher') {
+                            return $query->where('user_id', $user->id);
+                        }
+                        return $query;
+                    })
                     ->label('Filter by Course'),
             ])
             ->actions([

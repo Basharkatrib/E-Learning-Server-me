@@ -27,8 +27,9 @@ class QuizAttemptResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.name')
+                Tables\Columns\TextColumn::make('user.first_name')
                     ->label('Student Name')
+                    ->formatStateUsing(fn ($state, $record) => $record->user->first_name . ' ' . $record->user->last_name)
                     ->searchable()
                     ->sortable(),
 

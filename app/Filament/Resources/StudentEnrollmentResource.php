@@ -27,8 +27,9 @@ class StudentEnrollmentResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                Tables\Columns\TextColumn::make('first_name')
                     ->label('Student Name')
+                    ->formatStateUsing(fn ($state, $record) => $record->first_name . ' ' . $record->last_name)
                     ->searchable()
                     ->sortable(),
                     
