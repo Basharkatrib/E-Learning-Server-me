@@ -21,6 +21,8 @@ class CourseFaqResource extends Resource
     protected static ?string $model = CourseFAQ::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-question-mark-circle';
+    protected static ?string $navigationGroup = 'Course Management';
+
 
     protected static ?int $navigationSort = 5;
 

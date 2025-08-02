@@ -22,6 +22,8 @@ class RatingResource extends Resource
     protected static ?string $model = Rating::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-star';
+    protected static ?string $navigationGroup = 'Course Management';
+
 
     protected static ?int $navigationSort = 7;
 
@@ -42,7 +44,7 @@ class RatingResource extends Resource
                     ->label('Course')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
+                Tables\Columns\TextColumn::make('user.first_name')
                     ->label('User')
                     ->searchable()
                     ->sortable(),

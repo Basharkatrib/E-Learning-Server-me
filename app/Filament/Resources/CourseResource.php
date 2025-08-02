@@ -21,7 +21,10 @@ class CourseResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?string $navigationGroup = 'Course Management';
+
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
@@ -112,7 +115,12 @@ class CourseResource extends Resource
                     ->url()
                     ->prefix('https://')
                     ->placeholder('Enter PDF URL from Cloudinary')
-                    ->helperText('Enter the full URL of the PDF file from Cloudinary')
+                    ->helperText('Enter the full URL of the PDF file from Cloudinary'),
+                Forms\Components\Hidden::make('user_id')
+                    ->default(function () {
+                        $user = auth()->user();
+                        return $user ? $user->id : null;
+                    })
             ]);
     }
 
@@ -191,8 +199,22 @@ class CourseResource extends Resource
                     ->relationship('category', 'name'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->visible(function ($record) {
+                        $user = auth()->user();
+                        if ($user && $user->role === 'teacher') {
+                            return $record->user_id === $user->id;
+                        }
+                        return true;
+                    }),
+                Tables\Actions\DeleteAction::make()
+                    ->visible(function ($record) {
+                        $user = auth()->user();
+                        if ($user && $user->role === 'teacher') {
+                            return $record->user_id === $user->id;
+                        }
+                        return true;
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -204,7 +226,7 @@ class CourseResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            \App\Filament\Resources\CourseResource\RelationManagers\BenefitsRelationManager::class,
         ];
     }
 

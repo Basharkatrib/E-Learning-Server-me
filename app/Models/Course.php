@@ -17,7 +17,7 @@ class Course extends Model
         "title",
         "description",
         "category_id",
-        "created_by",
+        "user_id",
         "difficulty_level",
         "default_language",
         "thumbnail_url",
