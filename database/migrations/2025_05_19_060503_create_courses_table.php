@@ -27,6 +27,8 @@ return new class extends Migration
             $table->string("document_url")->nullable();
             $table->string('default_language');
             $table->boolean("is_sequential")->default(false);
+            $table->boolean("accepts_mtn")->default(false);
+            $table->boolean("accepts_syriatel")->default(false);
             $table->timestamps();
         });
     }

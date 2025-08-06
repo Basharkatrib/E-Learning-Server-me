@@ -50,12 +50,6 @@ class BenefitsCourseResource extends Resource
                     ->searchable()
                     ->preload()
                     ->label('Course'),
-                Forms\Components\TextInput::make('order')
-                    ->label('Order')
-                    ->numeric()
-                    ->default(0)
-                    ->minValue(0)
-                    ->required(),
             ]);
     }
 
@@ -83,10 +77,7 @@ class BenefitsCourseResource extends Resource
                     })
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('order')
-                    ->label('Order')
-                    ->sortable()
-                    ->badge(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime('Y-m-d H:i')
@@ -114,7 +105,7 @@ class BenefitsCourseResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
-            ->defaultSort('order', 'asc');
+            ->defaultSort('created_at', 'desc');
     }
 
     public static function getRelations(): array

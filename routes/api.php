@@ -116,11 +116,12 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::post("/enrollment/check", [EnrollmentController::class, "isEnrolled"])->middleware("auth:sanctum");
 
     // Quiz Routes
+    Route::middleware("auth:sanctum")->group(function () {
     Route::get("courses/{course}/quiz", [QuizController::class, "index"]);
     Route::get("courses/{course}/quiz/{quiz}", [QuizController::class, "show"]);
-    Route::post("courses/{course}/quiz/{quiz}/submit", [QuizController::class, "submit"])->middleware("auth:sanctum");
-    Route::get('courses/{courseId}/quizzes/{quizId}/attempt-status', [QuizController::class, 'checkAttemptStatus'])->middleware("auth:sanctum");
-
+    Route::post("courses/{course}/quiz/{quiz}/submit", [QuizController::class, "submit"]);
+    Route::get('courses/{courseId}/quizzes/{quizId}/attempt-status', [QuizController::class, 'checkAttemptStatus']);
+    });
     //user attempt
     Route::post("courses/{course}/quiz/attempts", [QuizAttemptController::class, "start"])->middleware("auth:sanctum");
 

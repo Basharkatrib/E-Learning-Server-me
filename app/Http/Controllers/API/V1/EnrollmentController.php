@@ -35,10 +35,37 @@ class EnrollmentController extends Controller
             return response()->json(["message" => "User is already enrolled in this course"], 409);
         }
 
-        //enroll th student
-        DB::transaction(function () use ($course) {
-            Auth::user()->courses()->attach($course->id, [
-                "enrolled_at" => now(),
+        // For free courses
+        if ($course->price <= 0) {
+            //enroll th student
+            DB::transaction(function () use ($course) {
+                Auth::user()->courses()->attach($course->id, [
+                    "status" => "accepted",
+                    "enrolled_at" => now(),
+                    "progress" => 0,
+                    "videos_completed" => false,
+                    "completed_at" => null
+                ]);
+            });
+
+            return response()->json([
+                "message" => "Successfully enrolled in the course",
+                "enrollment" => [
+                    "courseId" => $course->id,
+                    'courseTitle' => $course->title,
+                    "userId" => $user->id,
+                    "enrolledAt" => now()->toDateString(),
+                    "progress" => 0,
+                    "videosCompleted" => false
+                ]
+            ]);
+        }
+
+        // For paid courses
+        DB::transaction(function () use ($user, $course) {
+            $user->courses()->attach($course->id, [
+                "price_paid" => $course->price,
+                "status" => "pending",
                 "progress" => 0,
                 "videos_completed" => false,
                 "completed_at" => null
@@ -46,16 +73,16 @@ class EnrollmentController extends Controller
         });
 
         return response()->json([
-            "message" => "Successfully enrolled in the course",
-            "enrollment" => [
-                "courseId" => $course->id,
-                'courseTitle' => $course->title,
-                "userId" => Auth::user()->id,
-                "enrolledAt" => now()->toDateString(),
-                "progress" => 0,
-                "videosCompleted" => false
-            ]
-        ]);
+            "message" => "Payment required for course enrollment",
+            "payment_details" => [
+                "amount" => $course->price,
+                "teacherQRCodes" => [
+                    "mtn" => $course->teacher->mtn_qr_code ?? null,
+                    "syriatel" => $course->teacher->syriatel_qr_code ?? null,
+                ],
+            ],
+            "enrollment_status" => "Pending approval"
+        ], 402);
     }
 
     /**
