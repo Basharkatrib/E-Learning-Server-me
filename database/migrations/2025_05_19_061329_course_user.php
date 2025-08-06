@@ -16,6 +16,10 @@ return new class extends Migration
             $table->foreignId('course_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->decimal("price_paid", 8, 2)->nullable();
+            $table->enum("status", ["rejected", "pending", "accepted"])->default("pending");
+            $table->string("payment_method")->nullable(); //mtn, syriatel
+            $table->string("transation_id")->nullable();
+            $table->string("payment_screenshot_path")->nullable();
             $table->timestamp('enrolled_at')->nullable();
             $table->timestamps();
         });
