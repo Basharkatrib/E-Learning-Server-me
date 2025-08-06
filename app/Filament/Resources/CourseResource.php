@@ -82,26 +82,12 @@ class CourseResource extends Resource
                 Forms\Components\FileUpload::make('thumbnail_url')
                     ->label('Image')
                     ->image()
-                    ->disk('cloudinary')
-                    ->directory('courses')
+                    ->disk('public')
+                    ->directory('courses_images')
                     ->visibility('public')
                     ->maxSize(5120)
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/jpg'])
-                    /* ->required() */
-                    ->columnSpanFull()
-                    ->preserveFilenames()
-                    ->dehydrateStateUsing(function ($state) {
-                        if (is_array($state)) {
-                            $state = reset($state);
-                        }
-                        if (is_string($state) && str_starts_with($state, 'http')) {
-                            return $state;
-                        }
-                        if (is_string($state)) {
-                            return \Storage::disk('cloudinary')->url($state);
-                        }
-                        return $state;
-                    }),
+                    ->columnSpanFull(),
                 Forms\Components\Select::make('default_language')
                     ->options([
                         'en' => 'English',
@@ -172,7 +158,7 @@ class CourseResource extends Resource
                 Tables\Columns\ImageColumn::make('thumbnail_url')
                     ->label('Image')
                     ->square()
-                    ->disk('cloudinary')
+                    ->disk('public')
                     ->visibility('public')
                     ->columnSpanFull(),
                 Tables\Columns\TextColumn::make('default_language')
