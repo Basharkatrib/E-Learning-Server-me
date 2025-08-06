@@ -223,12 +223,6 @@ class CourseResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            \App\Filament\Resources\CourseResource\RelationManagers\BenefitsRelationManager::class,
-        ];
-    }
 
     public static function getPages(): array
     {
