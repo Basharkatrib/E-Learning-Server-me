@@ -89,4 +89,40 @@ class Course extends Model
     public function quiz():HasOne {
         return $this->hasOne(Quiz::class);
     }
+
+    /**
+     * Get the full URL for the thumbnail
+     */
+    public function getThumbnailUrlAttribute($value)
+    {
+        if (!$value) {
+            return null;
+        }
+        
+        // If it's already a full URL, return as is
+        if (filter_var($value, FILTER_VALIDATE_URL)) {
+            return $value;
+        }
+        
+        // Convert relative path to full URL
+        return config('app.url') . '/storage/' . $value;
+    }
+
+    /**
+     * Set the thumbnail URL - convert to full URL when saving
+     */
+    public function setThumbnailUrlAttribute($value)
+    {
+        // Handle array from FileUpload component
+        if (is_array($value)) {
+            $value = $value[0] ?? null;
+        }
+        
+        if ($value && !filter_var($value, FILTER_VALIDATE_URL)) {
+            // Convert relative path to full URL
+            $this->attributes['thumbnail_url'] = config('app.url') . '/storage/' . $value;
+        } else {
+            $this->attributes['thumbnail_url'] = $value;
+        }
+    }
 }
