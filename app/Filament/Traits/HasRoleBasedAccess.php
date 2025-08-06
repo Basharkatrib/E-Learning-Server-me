@@ -30,6 +30,7 @@ trait HasRoleBasedAccess
                 \App\Filament\Resources\SectionResource::class,
                 \App\Filament\Resources\SkillResource::class,
                 \App\Filament\Resources\VideoResource::class,
+                \App\Filament\Resources\QuizResource::class,
                 // Add any other resources you want teachers to see
             ];
 
@@ -61,6 +62,13 @@ trait HasRoleBasedAccess
             
             // For ratings, only show ratings for their courses
             if (static::class === \App\Filament\Resources\RatingResource::class) {
+                return $query->whereHas('course', function ($query) use ($user) {
+                    $query->where('user_id', $user->id);
+                });
+            }
+            
+            // For quizzes, only show quizzes for their courses
+            if (static::class === \App\Filament\Resources\QuizResource::class) {
                 return $query->whereHas('course', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
                 });

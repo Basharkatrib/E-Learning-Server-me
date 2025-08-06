@@ -40,7 +40,9 @@ class SessionController extends Controller
             'message' => 'Login successful',
             'user' => [
                 'id' => $user->id,
-                'name' => $user->name,
+                'firstName' => $user->first_name,
+                'lastName' => $user->last_name,
+                'phoneNumber' => $user->phone_number,
                 'email' => $user->email,
                 'profile_image' => $user->profile_image,
                 'email_verified_at' => $user->email_verified_at,
@@ -72,9 +74,14 @@ class SessionController extends Controller
     public function redirectToGoogle()
     {
         try {
-            $url = Socialite::driver('google')->stateless()->redirect()->getTargetUrl();
+            $url = Socialite::driver('google')
+                ->stateless()
+                ->scopes(['openid', 'profile', 'email'])
+                ->redirect()
+                ->getTargetUrl();
             return response()->json(['url' => $url]);
         } catch (\Exception $e) {
+            \Log::error('Google redirect error: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to initialize Google login'], 500);
         }
     }
@@ -82,17 +89,36 @@ class SessionController extends Controller
     public function handleGoogleCallback(Request $request)
     {
         try {
-            $googleUser = Socialite::driver('google')->stateless()->user();
+            $googleUser = Socialite::driver('google')
+                ->stateless()
+                ->scopes(['openid', 'profile', 'email'])
+                ->user();
+            
+            // Log Google user data for debugging
+            \Log::info('Google user data:', [
+                'id' => $googleUser->id,
+                'name' => $googleUser->name,
+                'email' => $googleUser->email,
+                'avatar' => $googleUser->avatar
+            ]);
+            
             $user = User::where('google_id', $googleUser->id)->first();
 
             if (!$user) {
-                $user = User::create([
-                    'name' => $googleUser->name,
-                    'email' => $googleUser->email,
-                    'google_id' => $googleUser->id,
-                    'password' => bcrypt(Str::random(16)),
-                    'email_verified_at' => now()
-                ]);
+                            // Split the name into first and last name
+            $nameParts = explode(' ', $googleUser->name, 2);
+            $firstName = $nameParts[0] ?? '';
+            $lastName = $nameParts[1] ?? null;
+            
+            $user = User::create([
+                'first_name' => $firstName,
+                'last_name' => $lastName,
+                'phone_number' => null,
+                'email' => $googleUser->email,
+                'google_id' => $googleUser->id,
+                'password' => bcrypt(Str::random(16)),
+                'email_verified_at' => now()
+            ]);
             } else {
                 // Update email_verified_at if not already set
                 if (!$user->email_verified_at) {
@@ -107,9 +133,11 @@ class SessionController extends Controller
             // Prepare user data
             $userData = [
                 'id' => $user->id,
-                'name' => $user->name,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name ?? null,
+                'phone_number' => $user->phone_number ?? null,
                 'email' => $user->email,
-                'profile_image' => $user->profile_image,
+                'profile_image' => $user->profile_image ?? $googleUser->avatar,
                 'email_verified_at' => $user->email_verified_at,
                 'role' => $user->role // Include role if needed
             ];
