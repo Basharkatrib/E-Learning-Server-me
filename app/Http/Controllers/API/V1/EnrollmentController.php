@@ -31,8 +31,17 @@ class EnrollmentController extends Controller
             return response()->json(["message" => "Only students can enroll"], 403);
         }
 
-        if ($user->courses()->where("course_id", $course->id)->exists()) {
-            return response()->json(["message" => "User is already enrolled in this course"], 409);
+        // Check if user is already enrolled
+        $existingEnrollment = $user->courses()->where("course_id", $course->id)->first();
+        
+        if ($existingEnrollment) {
+            // If user is already enrolled and status is accepted, return error
+            if ($existingEnrollment->pivot->status === 'accepted') {
+                return response()->json(["message" => "User is already enrolled in this course"], 409);
+            }
+            
+            // If user has pending or rejected enrollment, delete it to allow re-enrollment
+            $user->courses()->detach($course->id);
         }
 
         // For free courses
@@ -62,6 +71,8 @@ class EnrollmentController extends Controller
         }
 
         // For paid courses
+        $wasReEnrollment = $existingEnrollment && $existingEnrollment->pivot->status !== 'accepted';
+        
         DB::transaction(function () use ($user, $course) {
             $user->courses()->attach($course->id, [
                 "price_paid" => $course->price,
@@ -72,8 +83,12 @@ class EnrollmentController extends Controller
             ]);
         });
 
+        $message = $wasReEnrollment 
+            ? "Previous payment request was cancelled. New payment required for course enrollment"
+            : "Payment required for course enrollment";
+
         return response()->json([
-            "message" => "Payment required for course enrollment",
+            "message" => $message,
             "payment_details" => [
                 "amount" => $course->price,
                 "teacherQRCodes" => [
@@ -81,7 +96,8 @@ class EnrollmentController extends Controller
                     "syriatel" => $course->teacher->syriatel_qr_code ?? null,
                 ],
             ],
-            "enrollment_status" => "Pending approval"
+            "enrollment_status" => "Pending approval",
+            "was_re_enrollment" => $wasReEnrollment
         ], 402);
     }
 
@@ -158,6 +174,7 @@ class EnrollmentController extends Controller
 
         $courses = $user->courses()
             ->with(["category", "teacher"])
+            ->where('course_user.status', 'accepted') // Only show accepted enrollments
             ->when($request->has("category_id"), function ($query) use ($request) {
                 $query->where("category_id", $request->category_id);
             })
@@ -299,5 +316,79 @@ class EnrollmentController extends Controller
             "progress" => $request->progress,
             "videosCompleted" => $request->videos_completed ?? $enrollment->pivot->videos_completed
         ]);
+    }
+
+    /**
+     * Check payment status for a course enrollment
+     */
+    public function checkPaymentStatus(Request $request, Course $course)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['message' => 'Unauthenticated'], 401);
+        }
+
+        if ($user->role !== "student") {
+            return response()->json(["message" => "Only students can check payment status"], 403);
+        }
+
+        $enrollment = $user->enrolledCourses()
+            ->where("course_id", $course->id)
+            ->first();
+
+        if (!$enrollment) {
+            return response()->json([
+                "message" => "User is not enrolled in this course"
+            ], 404);
+        }
+
+        // Determine payment status based on enrollment status
+        $paymentStatus = 'pending';
+        $message = 'Payment is still pending. Please wait for teacher confirmation.';
+        
+        // Get enrollment data directly from pivot table to ensure we have access to all fields
+        $pivotData = \DB::table('course_user')
+            ->where('user_id', $user->id)
+            ->where('course_id', $course->id)
+            ->first();
+            
+        // Debug logging - let's see what we can access
+        \Log::info('Payment Status Check - Raw Enrollment Data', [
+            'courseId' => $course->id,
+            'userId' => $user->id,
+            'enrollment' => $enrollment,
+            'pivot' => $enrollment->pivot,
+            'pivotAttributes' => $enrollment->pivot ? $enrollment->pivot->getAttributes() : null,
+            'directPivotData' => $pivotData
+        ]);
+        
+        // Use pivot data directly if available, otherwise fall back to relationship
+        $status = $pivotData ? $pivotData->status : $enrollment->pivot->status;
+        $pricePaid = $pivotData ? $pivotData->price_paid : ($enrollment->pivot->price_paid ?? null);
+        $enrolledAt = $pivotData ? $pivotData->enrolled_at : $enrollment->pivot->enrolled_at;
+        
+        if ($status === 'accepted') {
+            $paymentStatus = 'accepted';
+            $message = 'Payment confirmed! You can now access the course.';
+        } elseif ($status === 'rejected') {
+            $paymentStatus = 'rejected';
+            $message = 'Payment was rejected. Please try again.';
+        }
+
+        $response = [
+            "courseId" => $course->id,
+            "userId" => $user->id,
+            "enrollmentStatus" => $status,
+            "paymentStatus" => $paymentStatus,
+            "enrolledAt" => $enrolledAt,
+            "pricePaid" => $pricePaid,
+            "canAccessCourse" => $status === 'accepted',
+            "message" => $message,
+        ];
+        
+        \Log::info('Payment Status Response', $response);
+        
+        return response()->json($response);
     }
 }
