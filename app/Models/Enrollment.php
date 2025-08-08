@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\PaymentAccepted;
+use App\Events\EnrollmentAccepted;
 
 class Enrollment extends Model
 {
@@ -48,6 +49,8 @@ class Enrollment extends Model
                 if ($enrollment->user && $enrollment->course && !empty($enrollment->user->email)) {
                     try {
                         Mail::to($enrollment->user->email)->send(new PaymentAccepted($enrollment));
+                        // Broadcast real-time notification
+                        event(new EnrollmentAccepted($enrollment));
                     } catch (\Throwable $e) {
                         // prevent throwing within admin UI
                     }
