@@ -32,12 +32,14 @@ class NoteController extends Controller
         try {
             $request->validate([
                 'course_id' => 'required|exists:courses,id',
+                'title' => 'nullable|string',
                 'content' => 'required|string',
             ]);
 
             $note = Note::create([
                 'user_id' => Auth::id(),
                 'course_id' => $request->course_id,
+                'title' => $request->title,
                 'content' => $request->content,
             ]);
 
@@ -79,10 +81,12 @@ class NoteController extends Controller
         }
 
         $request->validate([
+            'title' => 'nullable|string',
             'content' => 'required|string',
         ]);
 
         $note->update([
+            'title' => $request->title,
             'content' => $request->content,
         ]);
 
