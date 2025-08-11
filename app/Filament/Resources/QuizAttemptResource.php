@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\QuizAttemptResource\Pages;
 use App\Models\QuizAttempt;
+use App\Filament\Traits\HasRoleBasedAccess;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class QuizAttemptResource extends Resource
 {
+    use HasRoleBasedAccess;
     protected static ?string $model = QuizAttempt::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';

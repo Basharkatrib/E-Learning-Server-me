@@ -106,6 +106,7 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::delete("/courses/{course}/unenroll", [EnrollmentController::class, "unenroll"])->middleware("auth:sanctum");
     Route::get("/courses/{course}/enrollments", [EnrollmentController::class, "enrolledUsers"])->middleware("auth:sanctum");
     Route::get("/users/{user}/enrollments", [EnrollmentController::class, "userEnrollments"])->middleware("auth:sanctum");
+    Route::get("/courses/{course}/payment-status", [EnrollmentController::class, "checkPaymentStatus"])->middleware("auth:sanctum");
 
     //ratings
     Route::post("/courses/{course}/ratings", [RatingController::class, "store"])->middleware("auth:sanctum");
