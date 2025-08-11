@@ -76,7 +76,17 @@ class CourseController extends Controller
      */
     public function show(Course $course)
     {
-        $course->load(["category", "teacher", "skills", "sections.videos", "faqs", "ratings", "benefits"]);
+        
+        $course->load([
+            "category",
+            "teacher",
+            "skills",
+            "sections.videos",
+            "faqs",
+            "ratings.user:id,first_name,last_name",
+            "benefits"
+        ]);
+
         return response()->json($course);
     }
 
@@ -159,5 +169,4 @@ class CourseController extends Controller
             'data' => $courses
         ]);
     }
-
 }

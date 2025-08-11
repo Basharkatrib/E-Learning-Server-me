@@ -24,14 +24,17 @@ class RatingController extends Controller
      */
     public function store(StoreRatingRequest $req, Course $course)
     {
-        if (!$course->students()->where("user_id", Auth::id())->exists()) {
+
+        $user = Auth::user();
+
+        if (!$course->students()->where("user_id", $user->id)->exists()) {
             return response()->json([
                 "message" => "you must be enrolled in the course to submit a rating."
             ], 403);
         }
 
         //check if the user already rated this course
-        if ($course->ratings()->where("user_id", Auth::id())->exists()) {
+        if ($course->ratings()->where("user_id", $user->id)->exists()) {
             return response()->json([
                 "message" => "you have already rated this course!",
             ], 409);
@@ -39,14 +42,18 @@ class RatingController extends Controller
 
         $rating = Rating::create([
             "course_id" => $course->id,
-            "user_id" => Auth::id(),
+            "user_id" => $user->id,
             "rating" => $req->rating,
             "review" => $req->review,
         ]);
 
         return response()->json([
             "message" => "rating submitted successfully",
-            "rating" => $rating
+            "rating" => $rating,
+            "user" => [
+                "user_id" => $user->id,
+                "user_name" => $user->first_name . " " . $user->last_name,
+            ]
         ], 200);
     }
 
@@ -116,5 +123,4 @@ class RatingController extends Controller
         }
         return response()->json(['rating' => $rating], 200);
     }
-    
 }
