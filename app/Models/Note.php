@@ -12,11 +12,8 @@ class Note extends Model
     protected $fillable = [
         'user_id',
         'course_id',
-<<<<<<< HEAD
         "video_id",
-=======
         'title',
->>>>>>> 0ceb4aee496e315f6fa9a45be04bff85bbc41807
         'content',
     ];
 
