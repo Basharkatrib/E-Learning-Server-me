@@ -65,7 +65,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
     public function courses() // As student
     {
         return $this->belongsToMany(Course::class, "course_user")
-            ->withPivot("enrolled_at")
+            ->withPivot(["status", "price_paid", "enrolled_at", "progress", "videos_completed", "completed_at"])
             ->withTimestamps();
     }
 
@@ -77,7 +77,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
     public function enrolledCourses(): BelongsToMany
     {
         return $this->belongsToMany(Course::class, 'course_user')
-            ->withPivot(['progress', 'videos_completed', 'completed_at'])
+            ->withPivot(['status', 'price_paid', 'enrolled_at', 'progress', 'videos_completed', 'completed_at'])
             ->withTimestamps();
     }
 
