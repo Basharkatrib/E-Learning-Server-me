@@ -174,7 +174,8 @@ class EnrollmentController extends Controller
 
         $courses = $user->courses()
             ->with(["category", "teacher"])
-            ->where('course_user.status', 'accepted') // Only show accepted enrollments
+            // Show both accepted and pending enrollments
+            ->whereIn('course_user.status', ['accepted', 'pending'])
             ->when($request->has("category_id"), function ($query) use ($request) {
                 $query->where("category_id", $request->category_id);
             })
@@ -205,6 +206,7 @@ class EnrollmentController extends Controller
                         "ar" => $course->category->getTranslation('name', 'ar')
                     ],
                     "userEnrolledAt" => $course->pivot->enrolled_at,
+                    "status" => $course->pivot->status,
                 ];
             }),
         ]);
