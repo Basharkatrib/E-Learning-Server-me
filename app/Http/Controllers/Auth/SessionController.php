@@ -117,7 +117,8 @@ class SessionController extends Controller
                 'email' => $googleUser->email,
                 'google_id' => $googleUser->id,
                 'password' => bcrypt(Str::random(16)),
-                'email_verified_at' => now()
+                'email_verified_at' => now(),
+                'role' => 'student'
             ]);
             } else {
                 // Update email_verified_at if not already set
