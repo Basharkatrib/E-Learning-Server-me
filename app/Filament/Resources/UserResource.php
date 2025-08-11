@@ -55,6 +55,7 @@ class UserResource extends Resource
                     ->options([
                         'student' => 'Student',
                         'teacher' => 'Teacher',
+                        'employee' => 'Employee',
                         'admin' => 'Admin',
                     ]),
             ]);
@@ -77,6 +78,7 @@ class UserResource extends Resource
                     ->color(fn (string $state): string => match ($state) {
                         'teacher' => 'success',
                         'student' => 'info',
+                        'employee' => 'warning',
                         'admin' => 'success',
                     }),
                 Tables\Columns\TextColumn::make('email_verified_at')
@@ -96,6 +98,8 @@ class UserResource extends Resource
                     ->options([
                         'student' => 'Student',
                         'teacher' => 'Teacher',
+                        'employee' => 'Employee',
+                        'admin' => 'Admin',
                     ]),
             ])
             ->actions([

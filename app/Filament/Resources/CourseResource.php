@@ -13,6 +13,7 @@ use App\Filament\Traits\HasRoleBasedAccess;
 use Livewire\TemporaryUploadedFile;
 use Illuminate\Support\Facades\Storage;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Filament\Forms\Set;
 
 class CourseResource extends Resource
 {
@@ -58,9 +59,17 @@ class CourseResource extends Resource
                 Forms\Components\TextInput::make('duration')
                     ->label('Duration')
                     ->suffix(' minutes')
-                    ->required()
                     ->numeric()
-                    ->minValue(0),
+                    ->nullable()
+                    ->minValue(0)
+                    // Keep previous value if left empty on edit
+                    ->dehydrated(fn ($state) => filled($state))
+                    // When user clears the field, treat it as null so validation passes
+                    ->afterStateUpdated(function (Set $set, $state) {
+                        if ($state === '' || $state === null) {
+                            $set('duration', null);
+                        }
+                    }),
                 Forms\Components\TextInput::make("price")
                     ->label("price")
                     ->prefix('$')
@@ -74,8 +83,7 @@ class CourseResource extends Resource
                         'beginner' => 'Beginner',
                         'intermediate' => 'Intermediate',
                         'advanced' => 'Advanced',
-                    ])
-                    ->required(),
+                    ]),
                 Forms\Components\Toggle::make('is_sequential')
                     ->label('Is Sequential')
                     ->default(false),
@@ -90,6 +98,8 @@ class CourseResource extends Resource
                     /* ->required() */
                     ->columnSpanFull()
                     ->preserveFilenames()
+                    // Keep original image on edit if no new file is uploaded
+                    ->dehydrated(fn ($state) => filled($state))
                     ->dehydrateStateUsing(function ($state) {
                         if (is_array($state)) {
                             $state = reset($state);
@@ -223,12 +233,6 @@ class CourseResource extends Resource
             ]);
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            \App\Filament\Resources\CourseResource\RelationManagers\BenefitsRelationManager::class,
-        ];
-    }
 
     public static function getPages(): array
     {

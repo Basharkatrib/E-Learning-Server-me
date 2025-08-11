@@ -15,6 +15,46 @@ class QuizController extends Controller
     // Get all quizzes for a course
     public function index(Request $req, $courseId)
     {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return response()->json(['error' => 'يجب تسجيل الدخول أولاً'], 401);
+        }
+        
+        // Check if user is enrolled in the course (read-only using direct query)
+        $enrollment = \DB::table('course_user')
+            ->where('user_id', $user->id)
+            ->where('course_id', $courseId)
+            ->first();
+        if (!$enrollment) {
+            return response()->json(['error' => 'يجب التسجيل في الكورس أولاً للوصول للاختبار'], 403);
+        }
+        $course = Course::findOrFail($courseId);
+        $progress = (int) $enrollment->progress;
+        
+        // Debug logging
+        \Log::info('Quiz Access Check', [
+            'user_id' => $user->id,
+            'course_id' => $courseId,
+            'is_sequential' => $course->is_sequential,
+            'progress' => $progress,
+            'enrollment_progress' => $enrollment->progress
+        ]);
+        
+        if($course->is_sequential == 1 && $progress < 100){
+            return response()->json([
+                'error' => 'يجب إكمال الكورس بنسبة 100% للوصول للاختبار',
+                'progress' => $progress,
+                'required_progress' => 100
+            ], 403);
+        }
+        if($course->is_sequential == 0 && $progress < 80){
+            return response()->json([
+                'error' => 'يجب إكمال الكورس بنسبة 80% على الأقل للوصول للاختبار',
+                'progress' => $progress,
+                'required_progress' => 80
+            ], 403);
+        }
         $quizzes = Quiz::where("course_id", $courseId)
             ->with(['questions.options'])
             ->get();

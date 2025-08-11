@@ -106,6 +106,7 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::delete("/courses/{course}/unenroll", [EnrollmentController::class, "unenroll"])->middleware("auth:sanctum");
     Route::get("/courses/{course}/enrollments", [EnrollmentController::class, "enrolledUsers"])->middleware("auth:sanctum");
     Route::get("/users/{user}/enrollments", [EnrollmentController::class, "userEnrollments"])->middleware("auth:sanctum");
+    Route::get("/courses/{course}/payment-status", [EnrollmentController::class, "checkPaymentStatus"])->middleware("auth:sanctum");
 
     //ratings
     Route::post("/courses/{course}/ratings", [RatingController::class, "store"])->middleware("auth:sanctum");
@@ -116,11 +117,12 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
     Route::post("/enrollment/check", [EnrollmentController::class, "isEnrolled"])->middleware("auth:sanctum");
 
     // Quiz Routes
+    Route::middleware("auth:sanctum")->group(function () {
     Route::get("courses/{course}/quiz", [QuizController::class, "index"]);
     Route::get("courses/{course}/quiz/{quiz}", [QuizController::class, "show"]);
-    Route::post("courses/{course}/quiz/{quiz}/submit", [QuizController::class, "submit"])->middleware("auth:sanctum");
-    Route::get('courses/{courseId}/quizzes/{quizId}/attempt-status', [QuizController::class, 'checkAttemptStatus'])->middleware("auth:sanctum");
-
+    Route::post("courses/{course}/quiz/{quiz}/submit", [QuizController::class, "submit"]);
+    Route::get('courses/{courseId}/quizzes/{quizId}/attempt-status', [QuizController::class, 'checkAttemptStatus']);
+    });
     //user attempt
     Route::post("courses/{course}/quiz/attempts", [QuizAttemptController::class, "start"])->middleware("auth:sanctum");
 

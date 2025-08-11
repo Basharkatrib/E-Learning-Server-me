@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\StudentEnrollmentResource\Pages;
+use App\Filament\Traits\HasRoleBasedAccess;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Resources\Resource;
@@ -13,6 +14,7 @@ use Illuminate\Support\HtmlString;
 
 class StudentEnrollmentResource extends Resource
 {
+    use HasRoleBasedAccess;
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-academic-cap';

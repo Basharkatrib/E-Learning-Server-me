@@ -7,22 +7,23 @@ use Illuminate\Support\Facades\Log;
 
 trait HasRoleBasedAccess
 {
-    public static function shouldRegisterNavigation(): bool
+    protected static function isAllowedForRole(string $role): bool
     {
-        $user = auth()->user();
-        
-        if (!$user) {
-            return false;
-        }
-
-        // Admin can see everything
-        if ($user->role == 'admin') {
+        // Admin can access everything
+        if ($role === 'admin') {
             return true;
         }
 
-        // Teacher can see these resources
-        if ($user->role === 'teacher') {
-            $allowedResources = [
+        // Employee: only Orders
+        if ($role === 'employee') {
+            return in_array(static::class, [
+                \App\Filament\Resources\OrderResource::class,
+            ], true);
+        }
+
+        // Teacher: whitelist of resources
+        if ($role === 'teacher') {
+            return in_array(static::class, [
                 \App\Filament\Resources\CourseResource::class,
                 \App\Filament\Resources\CategoryResource::class,
                 \App\Filament\Resources\RatingResource::class,
@@ -31,22 +32,29 @@ trait HasRoleBasedAccess
                 \App\Filament\Resources\SkillResource::class,
                 \App\Filament\Resources\VideoResource::class,
                 \App\Filament\Resources\QuizResource::class,
-                // Add any other resources you want teachers to see
-            ];
-
-            $isAllowed = in_array(static::class, $allowedResources);
-            
-            // Log for debugging
-            Log::info('Resource access check', [
-                'resource' => static::class,
-                'user_role' => $user->role,
-                'is_allowed' => $isAllowed
-            ]);
-
-            return $isAllowed;
+            ], true);
         }
 
         return false;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        $user = auth()->user();
+        
+        if (!$user) {
+            return false;
+        }
+
+        $isAllowed = static::isAllowedForRole($user->role);
+
+        Log::info('Navigation access check', [
+            'resource' => static::class,
+            'user_role' => $user->role,
+            'is_allowed' => $isAllowed,
+        ]);
+
+        return $isAllowed;
     }
 
     public static function getEloquentQuery(): Builder
@@ -76,5 +84,42 @@ trait HasRoleBasedAccess
         }
 
         return $query;
+    }
+
+    // Hard-restrict page access as well (not just navigation)
+    public static function canViewAny(): bool
+    {
+        $user = auth()->user();
+        return $user ? static::isAllowedForRole($user->role) : false;
+    }
+
+    public static function canView($record): bool
+    {
+        $user = auth()->user();
+        return $user ? static::isAllowedForRole($user->role) : false;
+    }
+
+    public static function canCreate(): bool
+    {
+        $user = auth()->user();
+        return $user ? static::isAllowedForRole($user->role) : false;
+    }
+
+    public static function canEdit($record): bool
+    {
+        $user = auth()->user();
+        return $user ? static::isAllowedForRole($user->role) : false;
+    }
+
+    public static function canDelete($record): bool
+    {
+        $user = auth()->user();
+        return $user ? static::isAllowedForRole($user->role) : false;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        $user = auth()->user();
+        return $user ? static::isAllowedForRole($user->role) : false;
     }
 } 

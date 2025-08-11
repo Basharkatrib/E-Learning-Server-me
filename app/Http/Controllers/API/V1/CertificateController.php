@@ -42,7 +42,9 @@ class CertificateController extends Controller
         if ($existing) {
             return response()->json([
                 "message" => "Certificate already issued.",
-                "certificateUrl" => $existing->file_path
+                "data" => [
+                    "certificateUrl" => $existing->file_path
+                ]
             ]);
         }
 

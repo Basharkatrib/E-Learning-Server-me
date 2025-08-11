@@ -20,12 +20,12 @@ class EditUser extends EditRecord
 
         if ($oldRole !== $data['role']) {
             $eventData = [
-                'message' => "User {$record->first_name} {$record->last_name}'s role has been changed from {$oldRole} to {$data['role']}",
+                'message' => "You have been updated to the role {$data['role']}",
                 'user_name' => $record->first_name . ' ' . $record->last_name,
                 'old_role' => $oldRole,
                 'new_role' => $data['role']
             ];
-            event(new RoleUpdated($eventData));
+            event(new RoleUpdated($record->id, $eventData));
         }
 
         return $record;
