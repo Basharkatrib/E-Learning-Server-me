@@ -41,6 +41,10 @@ class CourseResource extends Resource
                                 Forms\Components\Textarea::make('description.en')
                                     ->label('Description (English)')
                                     ->required(),
+                                 Forms\Components\TextInput::make('duration.en')
+                                     ->label('Duration (English)')
+                                     ->placeholder('e.g. 120, 2 hours, 6 weeks')
+                                     ->nullable(),
                             ]),
                         Forms\Components\Tabs\Tab::make('Arabic')
                             ->schema([
@@ -50,26 +54,16 @@ class CourseResource extends Resource
                                 Forms\Components\Textarea::make('description.ar')
                                     ->label('Description (Arabic)')
                                     ->required(),
+                                 Forms\Components\TextInput::make('duration.ar')
+                                     ->label('Duration (Arabic)')
+                                     ->placeholder('مثلاً: 120، ساعتان، 6 أسابيع')
+                                     ->nullable(),
                             ]),
                     ]),
                 Forms\Components\Select::make('category_id')
                     ->relationship('category', 'name')
                     ->required()
                     ->searchable(),
-                Forms\Components\TextInput::make('duration')
-                    ->label('Duration')
-                    ->suffix(' minutes')
-                    ->numeric()
-                    ->nullable()
-                    ->minValue(0)
-                    // Keep previous value if left empty on edit
-                    ->dehydrated(fn ($state) => filled($state))
-                    // When user clears the field, treat it as null so validation passes
-                    ->afterStateUpdated(function (Set $set, $state) {
-                        if ($state === '' || $state === null) {
-                            $set('duration', null);
-                        }
-                    }),
                 Forms\Components\TextInput::make("price")
                     ->label("price")
                     ->prefix('$')
@@ -162,7 +156,12 @@ class CourseResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('duration')
                     ->label('Duration')
-                    ->suffix(' minutes')
+                    ->formatStateUsing(function ($state) {
+                        if (is_array($state)) {
+                            return $state[app()->getLocale()] ?? ($state['en'] ?? '');
+                        }
+                        return $state;
+                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('difficulty_level')
                     ->label('Difficulty Level')
