@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Enrollment;
 use App\Models\Note;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,12 +13,19 @@ class NoteController extends Controller
 {
     public function index(Request $request)
     {
-        $notes = Note::where('user_id', Auth::id())
-            ->when($request->course_id, function ($query) use ($request) {
-                return $query->where('course_id', $request->course_id);
-            })
-            ->latest()
-            ->get();
+
+        $query = Note::where('user_id', Auth::id())
+            ->with('video');
+
+        if ($request->has('course_id')) {
+            $query->where('course_id', $request->course_id);
+        }
+
+        if ($request->has('video_id')) {
+            $query->where('video_id', $request->video_id);
+        }
+
+        $notes = $query->latest()->get();
 
         return response()->json(['data' => $notes]);
     }
@@ -31,7 +39,20 @@ class NoteController extends Controller
 
         try {
             $request->validate([
-                'course_id' => 'required|exists:courses,id',
+                'course_id' => [
+                    'required',
+                    'exists:courses,id',
+                    function ($attribute, $value, $fail) {
+                        $isEnrolled = Enrollment::where('user_id', Auth::id())
+                            ->where('course_id', $value)
+                            ->exists();
+
+                        if (!$isEnrolled) {
+                            $fail('You are not enrolled in this course.');
+                        }
+                    },
+                ],
+                'video_id' => 'nullable|exists:videos,id',
                 'title' => 'nullable|string',
                 'content' => 'required|string',
             ]);
@@ -39,6 +60,7 @@ class NoteController extends Controller
             $note = Note::create([
                 'user_id' => Auth::id(),
                 'course_id' => $request->course_id,
+                'video_id' => $request->video_id,
                 'title' => $request->title,
                 'content' => $request->content,
             ]);
@@ -71,7 +93,7 @@ class NoteController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return response()->json(['data' => $note]);
+        return response()->json(['data' => $note->load('video')]);
     }
 
     public function update(Request $request, Note $note)
@@ -108,4 +130,4 @@ class NoteController extends Controller
             'message' => 'Note deleted successfully'
         ]);
     }
-} 
+}
