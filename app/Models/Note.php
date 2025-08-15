@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Note extends Model
 {
     protected $table = 'course_notes';
-    
+
     protected $fillable = [
         'user_id',
         'course_id',
@@ -26,4 +27,9 @@ class Note extends Model
     {
         return $this->belongsTo(Course::class);
     }
-} 
+
+    public function video(): BelongsTo
+    {
+        return $this->belongsTo(Video::class);
+    }
+}
