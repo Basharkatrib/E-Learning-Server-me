@@ -57,7 +57,13 @@ class VideoResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Select::make('course_id')
                     ->label('Course')
-                    ->relationship('section.course', 'title')
+                    ->relationship('section.course', 'title', function (Builder $query) {
+                        // If user is a teacher, only show their courses
+                        if (auth()->user()->role === 'teacher') {
+                            $query->where('user_id', auth()->id());
+                        }
+                        return $query;
+                    })
                     ->searchable()
                     ->preload()
                     ->live(),
@@ -105,6 +111,15 @@ class VideoResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                // If user is a teacher, only show videos from their courses
+                if (auth()->user()->role === 'teacher') {
+                    $query->whereHas('section.course', function (Builder $courseQuery) {
+                        $courseQuery->where('user_id', auth()->id());
+                    });
+                }
+                return $query;
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->label('Title')
@@ -154,7 +169,15 @@ class VideoResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('section')
-                    ->relationship('section', 'title')
+                    ->relationship('section', 'title', function (Builder $query) {
+                        // If user is a teacher, only show sections from their courses
+                        if (auth()->user()->role === 'teacher') {
+                            $query->whereHas('course', function (Builder $courseQuery) {
+                                $courseQuery->where('user_id', auth()->id());
+                            });
+                        }
+                        return $query;
+                    })
                     ->label('Section'),
                 Tables\Filters\TernaryFilter::make('is_preview')
                     ->label('Is Preview'),

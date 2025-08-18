@@ -33,7 +33,13 @@ class SkillResource extends Resource
         return $form
             ->schema([
                 MultiSelect::make('courses')
-                    ->relationship('courses', 'title')
+                    ->relationship('courses', 'title', function (Builder $query) {
+                        // If user is a teacher, only show their courses
+                        if (auth()->user()->role === 'teacher') {
+                            $query->where('user_id', auth()->id());
+                        }
+                        return $query;
+                    })
                     ->searchable()
                     ->preload()
                     ->label('Courses'),
@@ -61,6 +67,15 @@ class SkillResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                // If user is a teacher, only show skills from their courses
+                if (auth()->user()->role === 'teacher') {
+                    $query->whereHas('courses', function (Builder $courseQuery) {
+                        $courseQuery->where('user_id', auth()->id());
+                    });
+                }
+                return $query;
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     // ->searchable()

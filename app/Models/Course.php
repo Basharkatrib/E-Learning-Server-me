@@ -24,12 +24,13 @@ class Course extends Model
         "price",
         "duration",
         "link",
-        "document_url",
+        "documents",
         "is_sequential",
     ];
 
     protected $casts = [
         'document_url' => 'string',
+        'documents' => 'array',
     ];
 
     public $translatable = ["description", "title", "duration"];

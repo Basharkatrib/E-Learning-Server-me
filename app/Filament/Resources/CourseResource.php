@@ -14,6 +14,7 @@ use Livewire\TemporaryUploadedFile;
 use Illuminate\Support\Facades\Storage;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Filament\Forms\Set;
+use Illuminate\Database\Eloquent\Builder;
 
 class CourseResource extends Resource
 {
@@ -114,12 +115,39 @@ class CourseResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('link')
                     ->label('Link'),
-                Forms\Components\TextInput::make('document_url')
-                    ->label('Course PDF URL')
-                    ->url()
-                    ->prefix('https://')
-                    ->placeholder('Enter PDF URL from Cloudinary')
-                    ->helperText('Enter the full URL of the PDF file from Cloudinary'),
+                Forms\Components\Repeater::make('documents')
+                    ->label('Course Documents')
+                    ->schema([
+                        Forms\Components\TextInput::make('title')
+                            ->label('Document Title')
+                            ->required()
+                            ->maxLength(255)
+                            ->placeholder('e.g. Course Syllabus, Study Guide, etc.'),
+                        Forms\Components\TextInput::make('url')
+                            ->label('Document URL')
+                            ->url()
+                            ->required()
+                            ->prefix('https://')
+                            ->placeholder('Enter PDF URL from Cloudinary')
+                            ->helperText('Enter the full URL of the PDF file from Cloudinary'),
+                        Forms\Components\Select::make('type')
+                            ->label('Document Type')
+                            ->options([
+                                'syllabus' => 'Syllabus',
+                                'study_guide' => 'Study Guide',
+                                'assignment' => 'Assignment',
+                                'resource' => 'Resource',
+                                'other' => 'Other',
+                            ])
+                            ->default('other')
+                            ->required(),
+                    ])
+                    ->columns(3)
+                    ->defaultItems(0)
+                    ->reorderable(false)
+                    ->collapsible()
+                    ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                    ->columnSpanFull(),
                 Forms\Components\Hidden::make('user_id')
                     ->default(function () {
                         $user = auth()->user();
@@ -191,6 +219,16 @@ class CourseResource extends Resource
                         'en' => 'English',
                         default => $state,
                     }),
+                Tables\Columns\TextColumn::make('documents')
+                    ->label('Documents')
+                    ->formatStateUsing(function ($state) {
+                        if (is_array($state) && count($state) > 0) {
+                            return count($state) . ' document(s)';
+                        }
+                        return 'No documents';
+                    })
+                    ->badge()
+                    ->color('info'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime('Y-m-d')
@@ -206,6 +244,15 @@ class CourseResource extends Resource
                     ]),
                 Tables\Filters\SelectFilter::make('category')
                     ->relationship('category', 'name'),
+                Tables\Filters\TernaryFilter::make('has_documents')
+                    ->label('Has Documents')
+                    ->placeholder('All Courses')
+                    ->trueLabel('Courses with Documents')
+                    ->falseLabel('Courses without Documents')
+                    ->queries(
+                        true: fn (Builder $query) => $query->whereJsonLength('documents', '>', 0),
+                        false: fn (Builder $query) => $query->whereJsonLength('documents', 0),
+                    ),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

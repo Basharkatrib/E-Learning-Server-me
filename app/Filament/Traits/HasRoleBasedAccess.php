@@ -32,6 +32,7 @@ trait HasRoleBasedAccess
                 \App\Filament\Resources\SkillResource::class,
                 \App\Filament\Resources\VideoResource::class,
                 \App\Filament\Resources\QuizResource::class,
+                \App\Filament\Resources\BenefitsCourseResource::class,
             ], true);
         }
 

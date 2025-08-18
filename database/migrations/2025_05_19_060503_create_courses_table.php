@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string("thumbnail_url");
             $table->decimal("price", 8, 2)->nullable();
             $table->string("link")->nullable();
-            $table->string("document_url")->nullable();
+            $table->json("documents")->nullable();
             $table->string('default_language');
             $table->boolean("is_sequential")->default(false);
             $table->boolean("accepts_mtn")->default(false);

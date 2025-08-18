@@ -98,4 +98,9 @@ class RatingResource extends Resource
             // 'edit' => Pages\EditRating::route('/{record}/edit'),
         ];
     }
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
 }
