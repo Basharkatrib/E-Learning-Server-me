@@ -22,7 +22,8 @@ class EnrollmentAccepted implements ShouldBroadcastNow
         $course = $enrollment->course;
         $this->data = [
             'type' => 'enrollment.accepted',
-            'message' => sprintf('You have been accepted to the course "%s". You can now view the course.', $course?->title ?? 'Course'),
+            'message' => sprintf('You have been accepted to the 
+            course "%s". You can now view the course.', $course?->title ?? 'Course'),
             'userId' => $user?->id,
             'courseId' => $course?->id,
             'courseTitle' => $course?->title,

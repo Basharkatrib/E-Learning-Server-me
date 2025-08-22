@@ -31,7 +31,13 @@ class CourseFaqResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Select::make('course_id')
-                    ->relationship('course', 'title')
+                    ->relationship('course', 'title', function (Builder $query) {
+                        // If user is a teacher, only show their courses
+                        if (auth()->user()->role === 'teacher') {
+                            $query->where('user_id', auth()->id());
+                        }
+                        return $query;
+                    })
                     ->required()
                     ->searchable()
                     ->preload()
@@ -65,6 +71,15 @@ class CourseFaqResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                // If user is a teacher, only show FAQs from their courses
+                if (auth()->user()->role === 'teacher') {
+                    $query->whereHas('course', function (Builder $courseQuery) {
+                        $courseQuery->where('user_id', auth()->id());
+                    });
+                }
+                return $query;
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('course.title')
                     ->label('Course')

@@ -57,7 +57,13 @@ class SectionResource extends Resource
                     ->columnSpanFull(),
                 Forms\Components\Select::make('course_id')
                     ->label('Course')
-                    ->relationship('course', 'title')
+                    ->relationship('course', 'title', function (Builder $query) {
+                        // If user is a teacher, only show their courses
+                        if (auth()->user()->role === 'teacher') {
+                            $query->where('user_id', auth()->id());
+                        }
+                        return $query;
+                    })
                     ->required()
                     ->searchable()
                     ->preload(),
@@ -72,6 +78,15 @@ class SectionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                // If user is a teacher, only show sections from their courses
+                if (auth()->user()->role === 'teacher') {
+                    $query->whereHas('course', function (Builder $courseQuery) {
+                        $courseQuery->where('user_id', auth()->id());
+                    });
+                }
+                return $query;
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->label('Title')
@@ -104,7 +119,13 @@ class SectionResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('course')
-                    ->relationship('course', 'title')
+                    ->relationship('course', 'title', function (Builder $query) {
+                        // If user is a teacher, only show their courses
+                        if (auth()->user()->role === 'teacher') {
+                            $query->where('user_id', auth()->id());
+                        }
+                        return $query;
+                    })
                     ->label('Course'),
             ])
             ->actions([

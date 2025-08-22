@@ -45,7 +45,13 @@ class BenefitsCourseResource extends Resource
                             ]),
                     ]),
                 Forms\Components\Select::make('course_id')
-                    ->relationship('course', 'title')
+                    ->relationship('course', 'title', function (\Illuminate\Database\Eloquent\Builder $query) {
+                        // If user is a teacher, only show their courses
+                        if (auth()->user()->role === 'teacher') {
+                            $query->where('user_id', auth()->id());
+                        }
+                        return $query;
+                    })
                     ->required()
                     ->searchable()
                     ->preload()
@@ -56,6 +62,15 @@ class BenefitsCourseResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (\Illuminate\Database\Eloquent\Builder $query) {
+                // If user is a teacher, only show benefits from their courses
+                if (auth()->user()->role === 'teacher') {
+                    $query->whereHas('course', function (\Illuminate\Database\Eloquent\Builder $courseQuery) {
+                        $courseQuery->where('user_id', auth()->id());
+                    });
+                }
+                return $query;
+            })
             ->columns([
                 Tables\Columns\TextColumn::make('title')
                     ->label('Title')
@@ -91,7 +106,13 @@ class BenefitsCourseResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('course')
-                    ->relationship('course', 'title')
+                    ->relationship('course', 'title', function (\Illuminate\Database\Eloquent\Builder $query) {
+                        // If user is a teacher, only show their courses
+                        if (auth()->user()->role === 'teacher') {
+                            $query->where('user_id', auth()->id());
+                        }
+                        return $query;
+                    })
                     ->searchable()
                     ->preload()
                     ->label('Filter by Course'),
