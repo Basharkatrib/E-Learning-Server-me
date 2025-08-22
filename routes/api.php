@@ -135,6 +135,7 @@ Route::group(["prefix" => "v1", "namespace" => "App\Http\Controllers\API\V1"], f
 
     //updateUserInfo
     Route::post("/profile", [UpdateUserInfoController::class, "updateProfile"])->middleware("auth:sanctum");
+    Route::delete("/profile/image", [UpdateUserInfoController::class, "removeProfileImage"]);
 
     // Notes routes
     Route::middleware('auth:sanctum')->group(function () {

@@ -32,8 +32,6 @@ class CertificateController extends Controller
             ->latest()
             ->firstOrFail();
 
-     
-
         // Check if certificate already exists
         $existing = Certificate::where("quiz_id", $quiz->id)
             ->where("user_id", $user->id)

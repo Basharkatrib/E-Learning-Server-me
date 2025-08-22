@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
+use App\Models\DeviceToken;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Illuminate\Support\Str;
+
 class SessionController extends Controller
 {
     /** 
@@ -31,6 +33,16 @@ class SessionController extends Controller
                 'email_verification_required' => true,
                 'email' => $user->email
             ], 403);
+        }
+
+        //for FCM
+        if ($request->filled("fcm_token")) {
+            DeviceToken::updateOrCreate(
+                [
+                    "user_id" => $user->id,
+                    "device_token" => $request->fcm_token,
+                ],
+            );
         }
 
         // Create a new token
@@ -93,7 +105,7 @@ class SessionController extends Controller
                 ->stateless()
                 ->scopes(['openid', 'profile', 'email'])
                 ->user();
-            
+
             // Log Google user data for debugging
             \Log::info('Google user data:', [
                 'id' => $googleUser->id,
@@ -101,25 +113,25 @@ class SessionController extends Controller
                 'email' => $googleUser->email,
                 'avatar' => $googleUser->avatar
             ]);
-            
+
             $user = User::where('google_id', $googleUser->id)->first();
 
             if (!$user) {
-                            // Split the name into first and last name
-            $nameParts = explode(' ', $googleUser->name, 2);
-            $firstName = $nameParts[0] ?? '';
-            $lastName = $nameParts[1] ?? null;
-            
-            $user = User::create([
-                'first_name' => $firstName,
-                'last_name' => $lastName,
-                'phone_number' => null,
-                'email' => $googleUser->email,
-                'google_id' => $googleUser->id,
-                'password' => bcrypt(Str::random(16)),
-                'email_verified_at' => now(),
-                'role' => 'student'
-            ]);
+                // Split the name into first and last name
+                $nameParts = explode(' ', $googleUser->name, 2);
+                $firstName = $nameParts[0] ?? '';
+                $lastName = $nameParts[1] ?? null;
+
+                $user = User::create([
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'phone_number' => null,
+                    'email' => $googleUser->email,
+                    'google_id' => $googleUser->id,
+                    'password' => bcrypt(Str::random(16)),
+                    'email_verified_at' => now(),
+                    'role' => 'student'
+                ]);
             } else {
                 // Update email_verified_at if not already set
                 if (!$user->email_verified_at) {
@@ -145,7 +157,6 @@ class SessionController extends Controller
 
             // Redirect to frontend login page with data
             return redirect('https://learnovaeducation.netlify.app/login?token=' . $token . '&user=' . urlencode(json_encode($userData)));
-
         } catch (\Exception $e) {
             // Redirect to frontend with error
             return redirect('https://learnovaeducation.netlify.app/login?error=' . urlencode('Failed to authenticate with Google'));
