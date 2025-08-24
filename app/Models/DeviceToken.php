@@ -13,7 +13,6 @@ class DeviceToken extends Model
     protected $fillable = [
         "user_id",
         "device_token",
-        "device_type",
     ];
 
     public function user(): BelongsTo

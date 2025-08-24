@@ -3,7 +3,6 @@
 namespace App\Events;
 
 use App\Models\Enrollment;
-use App\Notifications\EnrollmentAcceptedNotification;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
@@ -40,16 +39,4 @@ class EnrollmentAccepted implements ShouldBroadcastNow
     {
         return 'enrollment-accepted';
     }
-
-    //for FireBase FCM
-    public function handle(EnrollmentAccepted $event)
-{
-    $user = $event->enrollment->user;
-
-    if ($user) {
-        $user->notify(new EnrollmentAcceptedNotification($event->data));
-    }
 }
-}
-
-
