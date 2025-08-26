@@ -24,39 +24,40 @@ class UpdateUserInfoController extends Controller
                 "country" => ["sometimes", "string", "max:255"],
             ]);
 
-        if ($req->filled("firstName")) {
-            $user->first_name = $req->firstName;
-        }
+            if ($req->filled("firstName")) {
+                $user->first_name = $req->firstName;
+            }
 
-        if ($req->filled("lastName")) {
-            $user->last_name = $req->lastName;
-        }
-        if ($req->filled("phoneNumber")) {
-            $user->phone_number = $req->phoneNumber;
-        }
+            if ($req->filled("lastName")) {
+                $user->last_name = $req->lastName;
+            }
 
-        if ($req->hasFile("profile_image")) {
-            $uploaded = Cloudinary::uploadApi()->upload(
-                $req->file('profile_image')->getRealPath(),
-                ['folder' => 'profile_image']
-            );
+            if ($req->filled("phoneNumber")) {
+                $user->phone_number = $req->phoneNumber;
+            }
 
-            $user->profile_image = $uploaded['secure_url'];
-        }
+            if ($req->hasFile("profile_image")) {
+                $uploaded = Cloudinary::uploadApi()->upload(
+                    $req->file('profile_image')->getRealPath(),
+                    ['folder' => 'profile_image']
+                );
 
-        if ($req->filled("specialization")) {
-            $user->specialization = $req->specialization;
-        }
+                $user->profile_image = $uploaded['secure_url'];
+            }
 
-        if ($req->filled("bio")) {
-            $user->bio = $req->bio;
-        }
+            if ($req->filled("specialization")) {
+                $user->specialization = $req->specialization;
+            }
 
-        if ($req->filled("country")) {
-            $user->country = $req->country;
-        }
+            if ($req->filled("bio")) {
+                $user->bio = $req->bio;
+            }
 
-        $user->save();
+            if ($req->filled("country")) {
+                $user->country = $req->country;
+            }
+
+            $user->save();
 
             return response()->json([
                 "message" => "Profile updated successfully",
@@ -78,5 +79,35 @@ class UpdateUserInfoController extends Controller
                 "message" => "Failed to update profile: " . $e->getMessage()
             ], 500);
         }
+    }
+
+    public function removeProfileImage(Request $req)
+    {
+        $user = $req->user();
+
+        // Check if user has a profile image
+        if (empty($user->profile_image)) {
+            return response()->json([
+                "message" => "No profile image to remove"
+            ], 400);
+        }
+
+        $urlParts = explode("/", $user->profile_image);
+        $publicId = end($urlParts);
+        $publicId = explode(".", $publicId)[0];
+        $folder = "profile_image/";
+
+        Cloudinary::uploadApi()->destroy($folder . $publicId);
+
+        $user->profile_image = null;
+        $user->save();
+
+        return response()->json([
+            "message" => "Profile image removed successfully",
+            "user" => [
+                "userId" => $user->id,
+                "userProfileImage" => null
+            ]
+        ]);
     }
 }

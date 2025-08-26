@@ -40,5 +40,3 @@ class EnrollmentAccepted implements ShouldBroadcastNow
         return 'enrollment-accepted';
     }
 }
-
-

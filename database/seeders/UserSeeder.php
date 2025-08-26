@@ -34,7 +34,7 @@ class UserSeeder extends Seeder
                 'role' => 'employee',
                 'password' => 'Employee123',
             ],
-<<<<<<< HEAD
+
             [
                 'first_name' => 'Student',
                 'last_name' => 'User',
@@ -43,8 +43,7 @@ class UserSeeder extends Seeder
                 'password' => 'Student123',
                 'email_verified_at' => now(),
             ],
-=======
->>>>>>> 32483589246c7b5bc61b74e29a1c4ab57d43f33b
+            
         ];
 
         foreach ($users as $data) {
@@ -63,5 +62,3 @@ class UserSeeder extends Seeder
         }
     }
 }
-
-
