@@ -88,17 +88,11 @@ class UpdateUserInfoController extends Controller
         // Check if user has a profile image
         if (empty($user->profile_image)) {
             return response()->json([
-                "message" => "No profile image to remove"
+                "message" => "No profile image to remove",
             ], 400);
         }
 
-        $urlParts = explode("/", $user->profile_image);
-        $publicId = end($urlParts);
-        $publicId = explode(".", $publicId)[0];
-        $folder = "profile_image/";
-
-        Cloudinary::uploadApi()->destroy($folder . $publicId);
-
+        // Remove the profile image reference (set to null)
         $user->profile_image = null;
         $user->save();
 
