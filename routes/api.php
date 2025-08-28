@@ -136,7 +136,7 @@ Route::middleware(['json.response'])->group(function () {
 
         //updateUserInfo
         Route::post("/profile", [UpdateUserInfoController::class, "updateProfile"])->middleware("auth:sanctum");
-        Route::delete("/profile/image", [UpdateUserInfoController::class, "removeProfileImage"]);
+        Route::delete("/profile/image", [UpdateUserInfoController::class, "removeProfileImage"])->middleware("auth:sanctum");;
 
         // Notes routes
         Route::middleware('auth:sanctum')->group(function () {

@@ -53,6 +53,7 @@ class RatingController extends Controller
             "user" => [
                 "user_id" => $user->id,
                 "user_name" => $user->first_name . " " . $user->last_name,
+                "profile_image" => $user->profile_image,
             ]
         ], 200);
     }

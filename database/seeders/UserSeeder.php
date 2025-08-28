@@ -43,7 +43,34 @@ class UserSeeder extends Seeder
                 'password' => 'Student123',
                 'email_verified_at' => now(),
             ],
-            
+
+            [
+                'first_name' => 'joy',
+                'last_name' => 'User',
+                'email' => 'joy.test@gmail.com',
+                'role' => 'student',
+                'password' => 'JoyStu123',
+                'email_verified_at' => now(),
+            ],
+
+            [
+                'first_name' => 'Mjd',
+                'last_name' => 'User',
+                'email' => 'mjd.test@gmail.com',
+                'role' => 'student',
+                'password' => 'MjdStu123',
+                'email_verified_at' => now(),
+            ],
+
+            [
+                'first_name' => 'Meray',
+                'last_name' => 'User',
+                'email' => 'meray.test@gmail.com',
+                'role' => 'student',
+                'password' => 'MerayStu123',
+                'email_verified_at' => now(),
+            ],
+
         ];
 
         foreach ($users as $data) {
