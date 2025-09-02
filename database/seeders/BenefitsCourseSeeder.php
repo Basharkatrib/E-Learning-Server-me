@@ -136,18 +136,26 @@ class BenefitsCourseSeeder extends Seeder
 
         foreach ($courses as $course) {
             $order = 1;
-            
-            // Add common benefits for all courses
+
+            // Add common benefits for all courses (idempotent)
             foreach ($commonBenefits as $benefit) {
-                BenefitsCourse::create([
-                    'course_id' => $course->id,
-                    'title' => $benefit['title'],
-                    'order' => $order++
-                ]);
+                $exists = BenefitsCourse::where('course_id', $course->id)
+                    ->where('title->en', $benefit['title']['en'])
+                    ->first();
+                if (!$exists) {
+                    BenefitsCourse::create([
+                        'course_id' => $course->id,
+                        'title' => $benefit['title'],
+                        'order' => $order++
+                    ]);
+                } else {
+                    $order++;
+                }
             }
 
-            // Add category-specific benefits
-            $category = $course->category->parent->name;
+            // Add category-specific benefits (safe parent/name handling)
+            $parentName = $course->category->parent->name ?? null;
+            $category = is_array($parentName) ? ($parentName['en'] ?? null) : $parentName;
             $specificBenefits = [];
 
             if (in_array($category, ['Development', 'IT & Software'])) {
@@ -159,11 +167,18 @@ class BenefitsCourseSeeder extends Seeder
             }
 
             foreach ($specificBenefits as $benefit) {
-                BenefitsCourse::create([
-                    'course_id' => $course->id,
-                    'title' => $benefit['title'],
-                    'order' => $order++
-                ]);
+                $exists = BenefitsCourse::where('course_id', $course->id)
+                    ->where('title->en', $benefit['title']['en'])
+                    ->first();
+                if (!$exists) {
+                    BenefitsCourse::create([
+                        'course_id' => $course->id,
+                        'title' => $benefit['title'],
+                        'order' => $order++
+                    ]);
+                } else {
+                    $order++;
+                }
             }
         }
     }

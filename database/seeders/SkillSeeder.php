@@ -145,7 +145,10 @@ class SkillSeeder extends Seeder
         ];
 
         foreach ($skills as $skill) {
-            Skill::create(["name" => $skill]);
+            $exists = Skill::where('name->en', $skill)->first();
+            if (!$exists) {
+                Skill::create(["name" => $skill]);
+            }
         }
     }
 }

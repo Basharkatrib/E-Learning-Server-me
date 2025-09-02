@@ -92,57 +92,33 @@ class SectionSeeder extends Seeder
         ];
 
         $sectionsCreated = 0;
-        $maxSections = 30; // Limit total sections to 50
+        $maxSections = 1000; // High cap; we will control per-course counts explicitly
 
         foreach ($courses as $course) {
-            $category = $course->category->parent->name;
-            $sections = $sectionTemplates[$category] ?? $sectionTemplates["Development"]; // Default to Development template
-            
+            $parentName = $course->category->parent->name ?? null;
+            $parentCategory = is_array($parentName) ? ($parentName['en'] ?? null) : $parentName;
+            $subName = $course->category->name ?? null;
+            $subCategory = is_array($subName) ? ($subName['en'] ?? null) : $subName;
+
+            $sections = $sectionTemplates[$parentCategory] ?? $sectionTemplates["Development"]; // Default to Development template
+
+            // Desired count: 2 for Web Development subcategory, else 5
+            $desiredCount = ($subCategory === 'Web Development') ? 2 : 5;
+            $desiredCount = min($desiredCount, count($sections));
+
             $order = 1;
-            foreach ($sections as $section) {
+            for ($i = 0; $i < $desiredCount; $i++) {
                 if ($sectionsCreated >= $maxSections) {
-                    break 2; // Break both loops if max sections reached
+                    break 2; // Break both loops if global cap reached
                 }
                 Section::create([
-                    "title" => $section["title"],
-                    "course_id" => $course->id,
-                    "order" => $order++
+                    'title' => $sections[$i]['title'],
+                    'course_id' => $course->id,
+                    'order' => $order++
                 ]);
                 $sectionsCreated++;
             }
-
-            // Add 1-3 bonus sections randomly
-            $bonusSections = [
-                ["title" => [
-                    "en" => "Bonus Content",
-                    "ar" => "محتوى إضافي"
-                ]],
-                ["title" => [
-                    "en" => "Additional Resources",
-                    "ar" => "موارد إضافية"
-                ]],
-                ["title" => [
-                    "en" => "Q&A Sessions",
-                    "ar" => "جلسات الأسئلة والأجوبة"
-                ]],
-                ["title" => [
-                    "en" => "Interview Preparation",
-                    "ar" => "التحضير للمقابلات"
-                ]]
-            ];
-
-            $randomBonus = collect($bonusSections)->random(rand(1, 3));
-            foreach ($randomBonus as $bonus) {
-                if ($sectionsCreated >= $maxSections) {
-                    break 2; // Break both loops if max sections reached
-                }
-                Section::create([
-                    "title" => $bonus["title"],
-                    "course_id" => $course->id,
-                    "order" => $order++
-                ]);
-                $sectionsCreated++;
-            }
+            // No bonus sections to keep exact counts per requirement
         }
     }
 }

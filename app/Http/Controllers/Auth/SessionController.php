@@ -162,4 +162,93 @@ class SessionController extends Controller
             return redirect('https://learnovaeducation.netlify.app/login?error=' . urlencode('Failed to authenticate with Google'));
         }
     }
+
+    /**
+     * Mobile (Flutter) Google sign-in using ID token from device.
+     * Expects: { id_token: string }
+     * Returns: { token, user }
+     */
+    public function googleMobileSignIn(Request $request)
+    {
+        $request->validate([
+            'id_token' => 'required|string',
+        ]);
+
+        try {
+            $client = new \Google_Client();
+            $client->setClientId(config('services.google.client_id'));
+
+            $payload = $client->verifyIdToken($request->input('id_token'));
+            if (!$payload) {
+                return response()->json(['message' => 'Invalid Google ID token'], 401);
+            }
+
+            $googleId = $payload['sub'] ?? null;
+            $email = $payload['email'] ?? null;
+            $name = $payload['name'] ?? '';
+            $avatar = $payload['picture'] ?? null;
+
+            if (!$googleId || !$email) {
+                return response()->json(['message' => 'Google token missing required claims'], 400);
+            }
+
+            \Log::info('Google mobile token verified', [
+                'sub' => $googleId,
+                'email' => $email,
+            ]);
+
+            $user = User::where('google_id', $googleId)->orWhere('email', $email)->first();
+
+            if (!$user) {
+                $nameParts = explode(' ', $name, 2);
+                $firstName = $nameParts[0] ?? '';
+                $lastName = $nameParts[1] ?? null;
+
+                $user = User::create([
+                    'first_name' => $firstName,
+                    'last_name' => $lastName,
+                    'phone_number' => null,
+                    'email' => $email,
+                    'google_id' => $googleId,
+                    'password' => bcrypt(Str::random(16)),
+                    'email_verified_at' => now(),
+                    'role' => 'student',
+                    'profile_image' => $avatar,
+                ]);
+            } else {
+                // Link google_id if missing
+                if (!$user->google_id) {
+                    $user->google_id = $googleId;
+                }
+                if (!$user->email_verified_at) {
+                    $user->email_verified_at = now();
+                }
+                if ($avatar && !$user->profile_image) {
+                    $user->profile_image = $avatar;
+                }
+                $user->save();
+            }
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            $userData = [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name ?? null,
+                'phone_number' => $user->phone_number ?? null,
+                'email' => $user->email,
+                'profile_image' => $user->profile_image ?? $avatar,
+                'email_verified_at' => $user->email_verified_at,
+                'role' => $user->role,
+            ];
+
+            return response()->json([
+                'token' => $token,
+                'user' => $userData,
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error('Google mobile sign-in failed: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to authenticate with Google'], 500);
+        }
+    }
 }
