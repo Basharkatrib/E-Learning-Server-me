@@ -247,7 +247,7 @@ class SessionController extends Controller
                 'user' => $userData,
             ]);
         } catch (\Throwable $e) {
-            \Log::error('Google mobile sign-in failed: ' . $e->getMessage());
+            \Log::error('Google mobile sign failed: ' . $e->getMessage());
             return response()->json(['message' => 'Failed to authenticate with Google'], 500);
         }
     }
