@@ -95,7 +95,28 @@ class FirebaseService
             ->withNotification(Notification::create($title, $body))
             ->withData($data);
 
-        return $this->messaging->sendMulticast($message, $tokens);
+        /* return $this->messaging->sendMulticast($message, $tokens); */
+        try {
+            $response = $this->messaging->sendMulticast($message, $tokens);
+
+            // ✅ Log only relevant info
+            Log::info("Firebase sendMulticast response", [
+                'success_count' => $response->successes()->count(),
+                'failure_count' => $response->failures()->count(),
+                'tokens' => $tokens,
+            ]);
+
+            return $response;
+        } catch (MessagingException $e) {
+            if (strpos($e->getMessage(), "Invalid registration token") !== false) {
+                DeviceToken::where("device_token", $deviceToken)->delete();
+            }
+            Log::error("Failed to send notification: " . $e->getMessage());
+            throw new \Exception("Failed to send notification: " . $e->getMessage());
+        } catch (FirebaseException $e) {
+            Log::error("Firebase error: " . $e->getMessage());
+            throw new \Exception("Firebase error: " . $e->getMessage());
+        }
     }
 
     public function sendToMultipleUsers($userIds, $title, $body, $data = [], $analyticsLabel = null)
