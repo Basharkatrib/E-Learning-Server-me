@@ -46,6 +46,9 @@ Route::middleware(['json.response'])->group(function () {
         Route::post("/login", [SessionController::class, "store"])
             ->name("login");
 
+        // Mobile Google Sign-In (Flutter) - accepts Google ID token and returns JSON
+        Route::post('/auth/google/mobile', [SessionController::class, 'googleMobileSignIn']);
+
         Route::post("/forgot-password", [PasswordResetLinkController::class, "store"])
             ->name("password.reset");
 

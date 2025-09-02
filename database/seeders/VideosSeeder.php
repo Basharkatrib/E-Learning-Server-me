@@ -22,16 +22,31 @@ class VideosSeeder extends Seeder
         }
 
         $youtubeVideos = [
-            "dQw4w9WgXcQ", // Rick Astley - Never Gonna Give You Up
-            "9bZkp7q19f0", // PSY - GANGNAM STYLE
-            "kJQP7kiw5Fk", // Luis Fonsi - Despacito
-            "y6120QOlsfU", // Sandstorm - Darude
-            "ZZ5LpwO-An4", // Ylvis - The Fox
-            "fJ9rUzIMcZQ", // Queen - Bohemian Rhapsody
-            "1Bix44H1v9I", // Queen - Don't Stop Me Now
-            "hFZFjoX2cGg", // Queen - Radio Ga Ga
-            "vjW8wmF5VWc", // Queen - We Will Rock You
-            "tgbNymZ7vqY", // Queen - We Are The Champions
+            // 1
+            "XlvsJLer_No?si=VJVugfV18dSr6f9k", // Rick Astley - Never Gonna Give You Up
+            "iPKrpRpUOzQ?si=Cl0iqty5Yz8L2iyq", // PSY - GANGNAM STYLE
+            "XlvsJLer_No?si=VJVugfV18dSr6f9k", // Rick Astley - Never Gonna Give You Up
+            "iPKrpRpUOzQ?si=Cl0iqty5Yz8L2iyq", // PSY - GANGNAM STYLE
+            // 2
+            "QFaFIcGhPoM?si=Gd4yUfJC2UgK10SQ", // Luis Fonsi - Despacito
+            "5_PdMS9CLLI?si=bIzNc8eFpl06wfUP", // Sandstorm - Darude
+            "QFaFIcGhPoM?si=Gd4yUfJC2UgK10SQ", // Luis Fonsi - Despacito
+            "5_PdMS9CLLI?si=bIzNc8eFpl06wfUP", // Sandstorm - Darude
+            // 3
+            "rIfdg_Ot-LI?si=_R1s2rJugnNndRIi", // Ylvis - The Fox
+            "WgO4T65j8pc?si=qlqXKZLlftxsWdii", // Queen - Bohemian Rhapsody
+            "rIfdg_Ot-LI?si=_R1s2rJugnNndRIi", // Ylvis - The Fox
+            "WgO4T65j8pc?si=qlqXKZLlftxsWdii", // Queen - Bohemian Rh
+            // 4
+            "wR0jg0eQsZA?si=GuzWC2-rlVs-7KrI", // Queen - Don't Stop Me Now
+            "5OdVJbNCSso?si=y6HB8Z5ziF8sfYDj", // Queen - Radio Ga Ga
+            "wR0jg0eQsZA?si=GuzWC2-rlVs-7KrI", // Queen - Don't Stop Me Now
+            "5OdVJbNCSso?si=y6HB8Z5ziF8sfYDj", // Queen - Radio Ga Ga
+            // 5
+            "1xipg02Wu8s?si=YHID2Ei389Myp3Qr", // Queen - We Will Rock You
+            "OO_-MbnXQzY?si=By6gey7fl7T9EjcC", // Queen - We Are The Champions
+            "1xipg02Wu8s?si=YHID2Ei389Myp3Qr", // Queen - We Will Rock You
+            "OO_-MbnXQzY?si=By6gey7fl7T9EjcC", // Queen - We Are The Champions
         ];
 
         $videoTemplates = [
@@ -118,20 +133,24 @@ class VideosSeeder extends Seeder
         $videoIndex = 0;
 
         foreach ($sections as $section) {
-            $category = $section->course->category->parent->name;
+            $parentName = $section->course->category->parent->name ?? null;
+            $category = is_array($parentName) ? ($parentName['en'] ?? null) : $parentName;
             $videos = $videoTemplates[$category] ?? $videoTemplates["Development"];
             
             $order = 1;
-            foreach ($videos as $video) {
+            $desiredCount = 2;
+            $templateCount = max(1, count($videos));
+            for ($i = 0; $i < $desiredCount; $i++) {
+                $video = $videos[$i % $templateCount];
                 $youtubeId = $youtubeVideos[$videoIndex % count($youtubeVideos)];
-                
+
                 Video::create([
-                    "title" => $video["title"],
-                    "video_url" => "https://www.youtube.com/embed/" . $youtubeId,
-                    "duration" => $video["duration"],
-                    "is_preview" => $video["is_preview"],
-                    "order" => $order++,
-                    "section_id" => $section->id
+                    'title' => $video['title'],
+                    'video_url' => 'https://www.youtube.com/embed/' . $youtubeId,
+                    'duration' => $video['duration'],
+                    'is_preview' => $video['is_preview'],
+                    'order' => $order++,
+                    'section_id' => $section->id
                 ]);
                 $videoIndex++;
             }

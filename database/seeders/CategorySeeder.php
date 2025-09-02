@@ -175,6 +175,18 @@ class CategorySeeder extends Seeder
                     ]
                 ]
             ],
+            "Math" => [
+                "name" => [
+                    "en" => "Math",
+                    "ar" => "الرياضيات"
+                ],
+            ],
+            "Science" => [
+                "name" => [
+                    "en" => "Science",
+                    "ar" => "العلوم"
+                ],
+            ],
             "Language Learning" => [
                 "name" => [
                     "en" => "Language Learning",
@@ -204,24 +216,36 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            $parent = Category::create([
-                "name" => $category["name"],
-                "description" => [
-                    "en" => $category["name"]["en"] . " related courses",
-                    "ar" => "دورات متعلقة بـ " . $category["name"]["ar"]
-                ],
-                "parent_id" => null,
-            ]);
+            $parent = Category::whereNull('parent_id')
+                ->where('name->en', $category['name']['en'])
+                ->first();
 
-            foreach ($category["children"] as $child) {
-                Category::create([
-                    "name" => $child["name"],
-                    "description" => [
-                        "en" => $child["name"]["en"] . " courses",
-                        "ar" => "دورات " . $child["name"]["ar"]
+            if (!$parent) {
+                $parent = Category::create([
+                    'name' => $category['name'],
+                    'description' => [
+                        'en' => $category['name']['en'] . ' related courses',
+                        'ar' => 'دورات متعلقة بـ ' . $category['name']['ar']
                     ],
-                    "parent_id" => $parent->id,
+                    'parent_id' => null,
                 ]);
+            }
+
+            foreach (($category['children'] ?? []) as $child) {
+                $existingChild = Category::where('parent_id', $parent->id)
+                    ->where('name->en', $child['name']['en'])
+                    ->first();
+
+                if (!$existingChild) {
+                    Category::create([
+                        'name' => $child['name'],
+                        'description' => [
+                            'en' => $child['name']['en'] . ' courses',
+                            'ar' => 'دورات ' . $child['name']['ar']
+                        ],
+                        'parent_id' => $parent->id,
+                    ]);
+                }
             }
         }
     }
