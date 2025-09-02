@@ -146,42 +146,67 @@ class FAQsSeeder extends Seeder
         ];
 
         foreach ($courses as $course) {
-            // Add common FAQs (3-5, but no more than available)
-            $commonCount = min(5, count($commonFaqs));
-            $randomCommonFaqs = collect($commonFaqs)->random(rand(3, $commonCount));
+            // Add common FAQs with safe bounds and idempotent insert
+            $commonMax = min(5, count($commonFaqs));
+            if ($commonMax > 0) {
+                $commonTake = max(1, min(3, $commonMax));
+                $randomCommonFaqs = collect($commonFaqs)->random($commonTake);
 
-            foreach ($randomCommonFaqs as $faq) {
-                CourseFAQ::create([
-                    "course_id" => $course->id,
-                    "question" => $faq["question"],
-                    "answer" => $faq["answer"]
-                ]);
+                foreach ($randomCommonFaqs as $faq) {
+                    $exists = CourseFAQ::where('course_id', $course->id)
+                        ->where('question->en', $faq['question']['en'])
+                        ->first();
+                    if (!$exists) {
+                        CourseFAQ::create([
+                            'course_id' => $course->id,
+                            'question' => $faq['question'],
+                            'answer' => $faq['answer']
+                        ]);
+                    }
+                }
             }
 
             // Add category-specific FAQs
-            $parentCategory = $course->category->parent->name;
+            $parentName = $course->category->parent->name ?? null;
+            $parentCategory = is_array($parentName) ? ($parentName['en'] ?? null) : $parentName;
 
-            if (in_array($parentCategory, ["Development", "IT & Software"])) {
-                $techCount = min(3, count($techFaqs));
-                $randomTechFaqs = collect($techFaqs)->random(rand(2, $techCount));
+            if (in_array($parentCategory, ['Development', 'IT & Software'])) {
+                $techMax = min(3, count($techFaqs));
+                if ($techMax > 0) {
+                    $techTake = max(1, min(2, $techMax));
+                    $randomTechFaqs = collect($techFaqs)->random($techTake);
 
-                foreach ($randomTechFaqs as $faq) {
-                    CourseFAQ::create([
-                        "course_id" => $course->id,
-                        "question" => $faq["question"],
-                        "answer" => $faq["answer"]
-                    ]);
+                    foreach ($randomTechFaqs as $faq) {
+                        $exists = CourseFAQ::where('course_id', $course->id)
+                            ->where('question->en', $faq['question']['en'])
+                            ->first();
+                        if (!$exists) {
+                            CourseFAQ::create([
+                                'course_id' => $course->id,
+                                'question' => $faq['question'],
+                                'answer' => $faq['answer']
+                            ]);
+                        }
+                    }
                 }
-            } elseif (in_array($parentCategory, ["Business", "Marketing"])) {
-                $businessCount = min(3, count($businessFaqs));
-                $randomBusinessFaqs = collect($businessFaqs)->random(rand(2, $businessCount));
+            } elseif (in_array($parentCategory, ['Business', 'Marketing'])) {
+                $businessMax = min(3, count($businessFaqs));
+                if ($businessMax > 0) {
+                    $businessTake = max(1, min(2, $businessMax));
+                    $randomBusinessFaqs = collect($businessFaqs)->random($businessTake);
 
-                foreach ($randomBusinessFaqs as $faq) {
-                    CourseFAQ::create([
-                        "course_id" => $course->id,
-                        "question" => $faq["question"],
-                        "answer" => $faq["answer"]
-                    ]);
+                    foreach ($randomBusinessFaqs as $faq) {
+                        $exists = CourseFAQ::where('course_id', $course->id)
+                            ->where('question->en', $faq['question']['en'])
+                            ->first();
+                        if (!$exists) {
+                            CourseFAQ::create([
+                                'course_id' => $course->id,
+                                'question' => $faq['question'],
+                                'answer' => $faq['answer']
+                            ]);
+                        }
+                    }
                 }
             }
         }
