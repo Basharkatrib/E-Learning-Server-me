@@ -268,7 +268,7 @@ class CourseSeeder extends Seeder
                 ],
             ],
             // Math
-            "Math" => [
+            "Algebra" => [
                 [
                     "title" => [
                         "en" => "Math for Beginners",
@@ -284,10 +284,10 @@ class CourseSeeder extends Seeder
                 ],
             ],
             // Science
-            "Science" => [
+            "Physics" => [
                 [
                     "title" => [
-                        "en" => "Science for Beginners",
+                        "en" => "Physics for Beginners",
                         "ar" => "العلوم للمبتدئين"
                     ],
                     "duration" => [
