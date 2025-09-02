@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Enrollment;
+use App\Observers\EnrollmentAcceptedObserver;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\URL;
@@ -47,5 +49,7 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Broadcast::routes();
+
+        Enrollment::observe(EnrollmentAcceptedObserver::class);
     }
 }
