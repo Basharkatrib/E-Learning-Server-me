@@ -175,11 +175,20 @@ class SessionController extends Controller
         ]);
 
         try {
+            \Log::info('Received Google mobile sign-in request', [
+                'has_id_token' => $request->has('id_token'),
+                'id_token_length' => strlen($request->input('id_token')),
+            ]);
+
             $client = new \Google_Client();
-            $client->setClientId(config('services.google.client_id'));
+            $clientId = config('services.google.client_id');
+            \Log::info('Using Google client ID: ' . $clientId);
+            
+            $client->setClientId($clientId);
 
             $payload = $client->verifyIdToken($request->input('id_token'));
             if (!$payload) {
+                \Log::error('Invalid Google ID token');
                 return response()->json(['message' => 'Invalid Google ID token'], 401);
             }
 
@@ -188,14 +197,15 @@ class SessionController extends Controller
             $name = $payload['name'] ?? '';
             $avatar = $payload['picture'] ?? null;
 
+            \Log::info('Google token verified successfully', [
+                'sub' => $googleId,
+                'email' => $email,
+                'name' => $name,
+            ]);
+
             if (!$googleId || !$email) {
                 return response()->json(['message' => 'Google token missing required claims'], 400);
             }
-
-            \Log::info('Google mobile token verified', [
-                'sub' => $googleId,
-                'email' => $email,
-            ]);
 
             $user = User::where('google_id', $googleId)->orWhere('email', $email)->first();
 
@@ -247,7 +257,10 @@ class SessionController extends Controller
                 'user' => $userData,
             ]);
         } catch (\Throwable $e) {
-            \Log::error('Google mobile sign-in failed: ' . $e->getMessage());
+            \Log::error('Google mobile sign-in failed', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return response()->json(['message' => 'Failed to authenticate with Google'], 500);
         }
     }

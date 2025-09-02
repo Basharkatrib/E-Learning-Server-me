@@ -180,12 +180,28 @@ class CategorySeeder extends Seeder
                     "en" => "Math",
                     "ar" => "الرياضيات"
                 ],
+                "children" => [
+                    [
+                        "name" => [
+                            "en" => "Algebra",
+                            "ar" => "الجبر"
+                        ]
+                    ]
+                ]
             ],
             "Science" => [
                 "name" => [
                     "en" => "Science",
                     "ar" => "العلوم"
                 ],
+                "children" => [
+                    [
+                        "name" => [
+                            "en" => "Physics",
+                            "ar" => "الفيزياء"
+                        ]
+                    ]
+                ]
             ],
             "Language Learning" => [
                 "name" => [
