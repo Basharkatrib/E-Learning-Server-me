@@ -1,5 +1,5 @@
 *
 !private/
 !public/
-!firebase/
+!firebase/account-service.json
 !.gitignore
