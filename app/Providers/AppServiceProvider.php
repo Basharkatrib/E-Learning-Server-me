@@ -50,6 +50,6 @@ class AppServiceProvider extends ServiceProvider
 
         Broadcast::routes();
 
-        Enrollment::observe(EnrollmentAcceptedObserver::class);
+        // Enrollment::observe(EnrollmentAcceptedObserver::class);
     }
 }
