@@ -220,7 +220,6 @@ return [
                 ],
             ],
             'credentials' => [
-                //'file' => base_path(env('FIREBASE_CREDENTIALS')),
                 'type' => env('FIREBASE_TYPE'),
                 'project_id' => env('FIREBASE_PROJECT_ID'),
                 'private_key_id' => env('FIREBASE_PRIVATE_KEY_ID'),
