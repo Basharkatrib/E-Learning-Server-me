@@ -130,12 +130,18 @@ class SessionController extends Controller
                     'google_id' => $googleUser->id,
                     'password' => bcrypt(Str::random(16)),
                     'email_verified_at' => now(),
-                    'role' => 'student'
+                    'role' => 'student',
+                    'profile_image' => $googleUser->avatar,
                 ]);
             } else {
                 // Update email_verified_at if not already set
                 if (!$user->email_verified_at) {
                     $user->email_verified_at = now();
+                    $user->save();
+                }
+                // Backfill profile_image from Google avatar if missing
+                if ($googleUser->avatar && !$user->profile_image) {
+                    $user->profile_image = $googleUser->avatar;
                     $user->save();
                 }
             }
