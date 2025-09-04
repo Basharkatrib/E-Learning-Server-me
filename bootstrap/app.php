@@ -23,14 +23,13 @@ return Application::configure(basePath: dirname(__DIR__))
         // Handle API exceptions to return JSON instead of HTML
         $exceptions->render(function (\Throwable $e, $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
-                // Special handling for authentication errors
-                if (str_contains($e->getMessage(), 'Unauthenticated') || 
+                // Special handling for authentication errors - only for actual auth failures
+                if ($e instanceof \Illuminate\Auth\AuthenticationException ||
+                    str_contains($e->getMessage(), 'Unauthenticated') || 
                     str_contains($e->getMessage(), 'unauthenticated') ||
-                    str_contains($e->getMessage(), 'authentication') ||
-                    str_contains($e->getMessage(), 'token') ||
-                    str_contains($e->getMessage(), 'Token') ||
-                    str_contains($e->getMessage(), 'sanctum') ||
-                    str_contains($e->getMessage(), 'Sanctum')) {
+                    (str_contains($e->getMessage(), 'authentication') && !str_contains($e->getMessage(), 'Failed to authenticate')) ||
+                    (str_contains($e->getMessage(), 'sanctum') && !str_contains($e->getMessage(), 'Failed to authenticate')) ||
+                    (str_contains($e->getMessage(), 'Sanctum') && !str_contains($e->getMessage(), 'Failed to authenticate'))) {
                     return response()->json([
                         'message' => 'Unauthenticated',
                         'error' => 'Authentication required'
