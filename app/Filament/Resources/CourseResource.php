@@ -64,7 +64,8 @@ class CourseResource extends Resource
                 Forms\Components\Select::make('category_id')
                     ->relationship('category', 'name')
                     ->required()
-                    ->searchable(),
+                    ->searchable(false)
+                    ->preload(),
                 Forms\Components\TextInput::make("price")
                     ->label("price")
                     ->prefix('$')
