@@ -35,13 +35,13 @@ class AppServiceProvider extends ServiceProvider
                 ]
             );
 
-            return "http://localhost:5174/verify-email?url=" . urlencode($temporarySignedURL);
+            return "https://learnovaeducation.netlify.app/verify-email?url=" . urlencode($temporarySignedURL);
         });
 
         ResetPassword::createUrlUsing(function ($notifiable, $token) {
             $frontendUrl = config('app.frontend_url', 'http://localhost:5174'); // fallback to localhost
 
-            return "http://localhost:5174/reset-password?token={$token}&email=" . urlencode($notifiable->getEmailForPasswordReset());
+            return "https://learnovaeducation.netlify.app/reset-password?token={$token}&email=" . urlencode($notifiable->getEmailForPasswordReset());
         });
 
         if (env('APP_ENV') === 'production') {
