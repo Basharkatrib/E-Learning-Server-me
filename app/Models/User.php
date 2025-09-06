@@ -129,12 +129,6 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser, Has
         return $this->first_name . ' ' . $this->last_name;
     }
 
-    //for fireBase FCM
-    public function deviceTokens()
-    {
-        return $this->hasMany(DeviceToken::class);
-    }
-
     public function routeNotificationForFcm()
     {
         return $this->deviceTokens()->pluck("device_token")->toArray();
