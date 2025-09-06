@@ -13,7 +13,6 @@ use App\Http\Controllers\API\V1\{
     SavedCourseController,
     NoteController,
     ContactMessageController,
-    NotificationController,
 };
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -172,8 +171,3 @@ Route::middleware(['json.response'])->group(function () {
     Route::get('/auth/google', [SessionController::class, 'redirectToGoogle']);
     Route::get('/auth/google/call-back', [SessionController::class, 'handleGoogleCallback']);
 }); // End of json.response middleware group
-
-
-Route::post("/v1/register-device-token", [NotificationController::class, "registerDeviceToken"])->middleware("auth:sanctum");
-Route::post("/v1/remove-device-token", [NotificationController::class, "removeDeviceToken"])->middleware("auth:sanctum");
-Route::post("/v1/send-notification", [NotificationController::class, "sendToCurrentUser"])->middleware("auth:sanctum");
