@@ -35,16 +35,6 @@ class SessionController extends Controller
             ], 403);
         }
 
-        //for FCM
-        if ($request->filled("fcm_token")) {
-            DeviceToken::updateOrCreate(
-                [
-                    "user_id" => $user->id,
-                    "device_token" => $request->fcm_token,
-                ],
-            );
-        }
-
         // Create a new token
         $token = $user->createToken("auth_token")->plainTextToken;
 

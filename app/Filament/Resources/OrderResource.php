@@ -67,8 +67,11 @@ class OrderResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')->sortable(),
+                Tables\Columns\TextColumn::make('user.first_name')
+                    ->label('Student Name')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('user.email')
-                    ->label('Student')
+                    ->label('Email')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('course.title')
                     ->label('Course')
