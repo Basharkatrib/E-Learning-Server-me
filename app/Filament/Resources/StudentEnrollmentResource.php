@@ -61,7 +61,34 @@ class StudentEnrollmentResource extends Resource
                 Tables\Filters\SelectFilter::make('courses')
                     ->relationship('enrolledCourses', 'title')
                     ->multiple()
-                    ->label('Filter by Course'),
+                    ->label('Filter by Course')
+                    ->modifyQueryUsing(function (Builder $query, array $data) {
+                        $user = auth()->user();
+                        if ($user && $user->role === 'teacher') {
+                            // For teachers, only show courses they created
+                            $query->whereHas('enrolledCourses', function ($query) use ($user) {
+                                $query->where('courses.user_id', $user->id);
+                            });
+                        }
+                        return $query;
+                    }),
+                    
+                Tables\Filters\SelectFilter::make('enrollment_status')
+                    ->label('Enrollment Status')
+                    ->options([
+                        'active' => 'Active',
+                        'completed' => 'Completed',
+                        'pending' => 'Pending',
+                        'cancelled' => 'Cancelled',
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        if ($data['value']) {
+                            return $query->whereHas('enrolledCourses', function ($query) use ($data) {
+                                $query->where('course_user.status', $data['value']);
+                            });
+                        }
+                        return $query;
+                    }),
                     
                 Tables\Filters\Filter::make('created_at')
                     ->form([
@@ -92,9 +119,26 @@ class StudentEnrollmentResource extends Resource
             ])
             ->defaultSort('created_at', 'desc')
             ->modifyQueryUsing(function (Builder $query) {
-                return $query->with(['enrolledCourses' => function ($query) {
-                    $query->select('courses.id', 'courses.title', 'course_user.progress');
+                $user = auth()->user();
+                
+                // Base query with enrolled courses relationship
+                $query = $query->with(['enrolledCourses' => function ($query) use ($user) {
+                    $query->select('courses.id', 'courses.title', 'course_user.progress', 'courses.user_id');
+                    
+                    // For teachers, only load their own courses
+                    if ($user && $user->role === 'teacher') {
+                        $query->where('courses.user_id', $user->id);
+                    }
                 }])->whereHas('enrolledCourses');
+                
+                // For teachers, only show students enrolled in their courses
+                if ($user && $user->role === 'teacher') {
+                    $query->whereHas('enrolledCourses', function ($query) use ($user) {
+                        $query->where('courses.user_id', $user->id);
+                    });
+                }
+                
+                return $query;
             });
     }
     
