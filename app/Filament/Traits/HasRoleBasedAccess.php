@@ -33,6 +33,7 @@ trait HasRoleBasedAccess
                 \App\Filament\Resources\VideoResource::class,
                 \App\Filament\Resources\QuizResource::class,
                 \App\Filament\Resources\BenefitsCourseResource::class,
+                \App\Filament\Resources\StudentEnrollmentResource::class,
             ], true);
         }
 
@@ -80,6 +81,13 @@ trait HasRoleBasedAccess
             if (static::class === \App\Filament\Resources\QuizResource::class) {
                 return $query->whereHas('course', function ($query) use ($user) {
                     $query->where('user_id', $user->id);
+                });
+            }
+            
+            // For student enrollments, only show students enrolled in their courses
+            if (static::class === \App\Filament\Resources\StudentEnrollmentResource::class) {
+                return $query->whereHas('enrolledCourses', function ($query) use ($user) {
+                    $query->where('courses.user_id', $user->id);
                 });
             }
         }
