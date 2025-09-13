@@ -45,11 +45,24 @@ RUN chown -R www-data:www-data /var/www/html \
 # Configure Apache
 RUN a2enmod rewrite
 
-# Copy nginx config (Render will use this)
-COPY conf/nginx/nginx-site.conf /etc/apache2/sites-available/000-default.conf
+# Configure Apache virtual host
+RUN echo '<VirtualHost *:80>\n\
+    ServerAdmin webmaster@localhost\n\
+    DocumentRoot /var/www/html/public\n\
+    <Directory /var/www/html/public>\n\
+        AllowOverride All\n\
+        Require all granted\n\
+    </Directory>\n\
+    ErrorLog ${APACHE_LOG_DIR}/error.log\n\
+    CustomLog ${APACHE_LOG_DIR}/access.log combined\n\
+</VirtualHost>' > /etc/apache2/sites-available/000-default.conf
+
+# Copy start script
+COPY start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
 # Expose port
 EXPOSE 80
 
-# Start Apache
-CMD ["apache2-foreground"]
+# Start Apache with Laravel setup
+CMD ["/usr/local/bin/start.sh"]
