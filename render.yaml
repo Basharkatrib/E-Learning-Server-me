@@ -1,0 +1,68 @@
+services:
+  - type: web
+    name: e-learning-server
+    env: docker
+    dockerfilePath: ./Dockerfile
+    plan: starter
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: APP_URL
+        fromService:
+          type: web
+          name: e-learning-server
+          property: host
+      - key: DB_CONNECTION
+        value: pgsql
+      - key: DB_HOST
+        fromDatabase:
+          name: e-learning-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: e-learning-db
+          property: port
+      - key: DB_DATABASE
+        fromDatabase:
+          name: e-learning-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: e-learning-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: e-learning-db
+          property: password
+      - key: CACHE_DRIVER
+        value: redis
+      - key: SESSION_DRIVER
+        value: redis
+      - key: QUEUE_CONNECTION
+        value: redis
+      - key: REDIS_HOST
+        fromService:
+          type: redis
+          name: e-learning-redis
+          property: host
+      - key: REDIS_PORT
+        fromService:
+          type: redis
+          name: e-learning-redis
+          property: port
+      - key: REDIS_PASSWORD
+        fromService:
+          type: redis
+          name: e-learning-redis
+          property: password
+
+databases:
+  - name: e-learning-db
+    plan: starter
+    engine: postgresql
+
+  - name: e-learning-redis
+    plan: starter
+    engine: redis
