@@ -1,18 +1,29 @@
-FROM composer:2 as vendor
+FROM php:8.2-cli-bullseye as vendor
 
 WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+      git \
+      unzip \
+      libzip-dev \
+      libicu-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && docker-php-ext-install zip intl
+
+# Add Composer binary
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Copy only composer files first for better caching
 COPY composer.json composer.lock ./
 
 # Install PHP dependencies without executing scripts (they require runtime env)
 RUN composer install \
-    --no-dev \
-    --prefer-dist \
-    --no-interaction \
-    --no-progress \
-    --no-scripts \
-    --optimize-autoloader
+      --no-dev \
+      --prefer-dist \
+      --no-interaction \
+      --no-progress \
+      --no-scripts \
+      --optimize-autoloader
 
 # Copy application code to allow classmap optimization in later stage
 COPY . /app
