@@ -10,7 +10,8 @@ set -euo pipefail
 echo "Starting container on port ${PORT}..."
 
 # Generate Nginx site config from template with current PORT
-envsubst '\n\r$PORT $SERVER_NAME' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+export PORT SERVER_NAME
+envsubst < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
 
 # Ensure directories exist and permissions are correct
 mkdir -p storage bootstrap/cache
