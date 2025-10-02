@@ -1,4 +1,4 @@
-FROM php:8.2-cli-bullseye as vendor
+FROM php:8.3-cli-bullseye as vendor
 
 WORKDIR /app
 
@@ -45,7 +45,7 @@ RUN npm run build
 ###############################################
 # Runtime image with PHP-FPM, Nginx, Supervisor
 ###############################################
-FROM php:8.2-fpm-bullseye as runtime
+FROM php:8.3-fpm-bullseye as runtime
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PHP_OPCACHE_VALIDATE_TIMESTAMPS=0 \
