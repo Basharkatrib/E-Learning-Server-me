@@ -1,0 +1,37 @@
+services:
+  - type: web
+    name: e-learning-server
+    env: docker
+    plan: free
+    autoDeploy: true
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_CHANNEL
+        value: stderr
+      - key: PORT
+        value: 8080
+      # Provide your database connection details in Render Dashboard or as synced secrets
+      - key: DB_CONNECTION
+        value: mysql
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 3306
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_USERNAME
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      # Set your Laravel key in Render Dashboard
+      - key: APP_KEY
+        sync: false
+    # Optional: increase start timeout for composer optimize/migrations
+    numInstances: 1
+    region: oregon
+
