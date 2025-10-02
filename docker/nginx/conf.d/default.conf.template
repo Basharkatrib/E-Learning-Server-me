@@ -1,0 +1,40 @@
+server {
+    listen       ${PORT};
+    listen       [::]:${PORT};
+    server_name  _;
+    root   /var/www/html/public;
+    index  index.php index.html;
+
+    client_max_body_size 20m;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ^~ /build/ {
+        access_log off;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        try_files $uri =404;
+    }
+
+    location ~ \.php$ {
+        include        fastcgi_params;
+        fastcgi_param  SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param  DOCUMENT_ROOT $realpath_root;
+        fastcgi_pass   127.0.0.1:9000;
+        fastcgi_index  index.php;
+        fastcgi_read_timeout 120s;
+    }
+
+    location ~* \.(jpg|jpeg|gif|png|css|js|ico|webp|tiff|svg|woff|woff2)$ {
+        access_log off;
+        log_not_found off;
+        expires 7d;
+        add_header Cache-Control "public";
+    }
+
+    location ~ /\.|^/\.ht { deny all; }
+}
+
+
