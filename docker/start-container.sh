@@ -2,7 +2,8 @@
 set -e
 
 # Configure Nginx to Render's dynamic port
-envsubst '${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
+mkdir -p /etc/nginx/http.d
+envsubst '${PORT}' < /etc/nginx/http.d/default.conf.template > /etc/nginx/http.d/default.conf
 
 # Laravel runtime prep
 cd /app
