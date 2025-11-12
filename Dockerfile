@@ -96,7 +96,8 @@ COPY --from=vendor /app/bootstrap/cache /app/bootstrap/cache
 COPY --from=assets /app/public/build /app/public/build
 
 # Nginx + Supervisor configs and entrypoint
-COPY docker/nginx.conf.template /etc/nginx/conf.d/default.conf.template
+RUN mkdir -p /etc/nginx/http.d
+COPY docker/nginx.conf.template /etc/nginx/http.d/default.conf.template
 COPY docker/supervisord.conf /etc/supervisord.conf
 COPY docker/start-container.sh /usr/local/bin/start-container.sh
 
