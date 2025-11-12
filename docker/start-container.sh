@@ -8,7 +8,7 @@ envsubst '${PORT}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d
 cd /app
 php artisan storage:link || true
 php artisan config:cache
-php artisan route:cache
+# php artisan route:cache
 php artisan view:cache
 php artisan event:cache
 # Uncomment if you want automatic schema updates on deploy
