@@ -1,127 +1,110 @@
-FROM php:8.3-cli-bullseye as vendor
+## Multi-stage Docker image for Laravel on Render (Nginx + PHP-FPM via supervisord)
+## - Stage 1: Composer dependencies
+## - Stage 2: Frontend build (Vite) - optional
+## - Stage 3: Final runtime (php-fpm + nginx + supervisord)
 
+# ------------------------------
+# Stage 1: PHP dependencies
+# ------------------------------
+FROM composer:2 AS vendor
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      git \
-      unzip \
-      libzip-dev \
-      libicu-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && docker-php-ext-install zip intl
-
-# Add Composer binary
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Copy only composer files first for better caching
 COPY composer.json composer.lock ./
+RUN composer install --no-dev --prefer-dist --no-progress --no-interaction
 
-# Install PHP dependencies without executing scripts (they require runtime env)
-RUN composer install \
-      --no-dev \
-      --prefer-dist \
-      --no-interaction \
-      --no-progress \
-      --no-scripts \
-      --optimize-autoloader
+# copy full app (for optimized autoload)
+COPY . .
+RUN composer dump-autoload --optimize
 
-# Copy application code to allow classmap optimization in later stage
-COPY . /app
+# ------------------------------
+# Stage 2: Frontend build (optional)
+# ------------------------------
+FROM node:20-alpine AS assets
+WORKDIR /app
 
-###############################################
-# Build frontend assets
-###############################################
-FROM node:20-alpine as assets
+# Copy lock files if present to leverage caching
+COPY package.json ./
+COPY package-lock.json* ./
+COPY pnpm-lock.yaml* ./
+COPY yarn.lock* ./
+
+RUN if [ -f package.json ]; then \
+      if [ -f pnpm-lock.yaml ]; then npm i -g pnpm && pnpm i --frozen-lockfile; \
+      elif [ -f yarn.lock ]; then npm i -g yarn && yarn install --frozen-lockfile; \
+      elif [ -f package-lock.json ]; then npm ci; \
+      else npm install; fi; \
+    fi
+
+COPY . .
+RUN if [ -f package.json ]; then \
+      if [ -f pnpm-lock.yaml ]; then pnpm build; \
+      elif [ -f yarn.lock ]; then yarn build; \
+      else npm run build; fi; \
+    fi; \
+    mkdir -p /app/public/build
+
+# ------------------------------
+# Stage 3: Runtime
+# ------------------------------
+FROM php:8.3-fpm-alpine AS runtime
 
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm ci --no-audit --no-fund
-COPY resources ./resources
-COPY vite.config.js ./vite.config.js
-COPY public ./public
-# Build Vite assets into public/build
-RUN npm run build
 
-###############################################
-# Runtime image with PHP-FPM, Nginx, Supervisor
-###############################################
-FROM php:8.3-fpm-bullseye as runtime
+# System and PHP extensions
+RUN set -eux; \
+    apk add --no-cache --virtual .build-deps \
+      $PHPIZE_DEPS \
+      icu-dev \
+      zlib-dev \
+      libzip-dev \
+      libpng-dev \
+      libjpeg-turbo-dev \
+      libwebp-dev \
+      freetype-dev; \
+    apk add --no-cache \
+      nginx \
+      supervisor \
+      git \
+      curl \
+      icu-libs \
+      libzip \
+      libpng \
+      libjpeg-turbo \
+      libwebp \
+      freetype \
+      tzdata \
+      bash \
+      gettext; \
+    docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp; \
+    docker-php-ext-install -j$(nproc) \
+      pdo_mysql \
+      bcmath \
+      exif \
+      intl \
+      gd \
+      zip \
+      opcache; \
+    apk del .build-deps; \
+    rm -rf /var/cache/apk/*
 
-ENV DEBIAN_FRONTEND=noninteractive \
-    PHP_OPCACHE_VALIDATE_TIMESTAMPS=0 \
-    PHP_MEMORY_LIMIT=512M \
-    PHP_MAX_EXECUTION_TIME=120 \
-    PHP_UPLOAD_MAX_FILESIZE=20M \
-    PHP_POST_MAX_SIZE=20M
+# Configure php-fpm for production a bit (opcache)
+COPY --chown=www-data:www-data . /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        nginx \
-        supervisor \
-        git \
-        unzip \
-        gettext-base \
-        libzip-dev \
-        libpng-dev \
-        libjpeg62-turbo-dev \
-        libfreetype6-dev \
-        libonig-dev \
-        libicu-dev \
-        locales \
-        ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+# Bring in vendor and built assets from previous stages
+COPY --from=vendor /app/vendor /app/vendor
+COPY --from=vendor /app/bootstrap/cache /app/bootstrap/cache
+COPY --from=assets /app/public/build /app/public/build
 
-# PHP extensions commonly needed by Laravel and dompdf
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
-        gd \
-        pdo_mysql \
-        zip \
-        exif \
-        intl \
-        opcache
+# Nginx + Supervisor configs and entrypoint
+COPY docker/nginx.conf.template /etc/nginx/conf.d/default.conf.template
+COPY docker/supervisord.conf /etc/supervisord.conf
+COPY docker/start-container.sh /usr/local/bin/start-container.sh
 
-# Configure PHP
-RUN { \
-      echo "memory_limit=${PHP_MEMORY_LIMIT}"; \
-      echo "max_execution_time=${PHP_MAX_EXECUTION_TIME}"; \
-      echo "opcache.enable=1"; \
-      echo "opcache.enable_cli=1"; \
-      echo "opcache.jit=1255"; \
-      echo "opcache.jit_buffer_size=64M"; \
-    } > /usr/local/etc/php/conf.d/custom.ini
+RUN chmod +x /usr/local/bin/start-container.sh && \
+    mkdir -p /run/nginx && \
+    chown -R www-data:www-data /app/storage /app/bootstrap/cache
 
-WORKDIR /var/www/html
-
-# Copy composer vendor from vendor stage
-COPY --from=vendor /app/vendor ./vendor
-
-# Copy application source
-COPY . .
-
-# Copy built assets
-COPY --from=assets /app/public/build ./public/build
-
-# Nginx and Supervisor configuration
-COPY docker/nginx/nginx.conf/nginx.conf /etc/nginx/nginx.conf
-COPY docker/nginx/conf.d/default.conf.template /etc/nginx/conf.d/default.conf.template
-COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-# Entry script
-COPY docker/start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
-
-# Ensure proper permissions for Laravel
-RUN mkdir -p storage bootstrap/cache \
-    && chown -R www-data:www-data /var/www/html \
-    && chmod -R ug+rwX storage bootstrap/cache
-
-# Send Nginx logs to stdout/stderr
-RUN ln -sf /dev/stdout /var/log/nginx/access.log \
-    && ln -sf /dev/stderr /var/log/nginx/error.log
-
-ENV PORT=8080
-EXPOSE 8080
-
-CMD ["/usr/local/bin/start.sh"]
+# Render will provide PORT; we don't EXPOSE a fixed port
+CMD ["start-container.sh"]
 
 

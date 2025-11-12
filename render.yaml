@@ -1,37 +1,24 @@
 services:
   - type: web
-    name: e-learning-server
+    name: laravel-app
     env: docker
-    plan: free
     autoDeploy: true
-    dockerfilePath: ./Dockerfile
-    healthCheckPath: /
-    envVars:
-      - key: APP_ENV
-        value: production
-      - key: APP_DEBUG
-        value: false
-      - key: LOG_CHANNEL
-        value: stderr
-      - key: PORT
-        value: 8080
-      # Provide your database connection details in Render Dashboard or as synced secrets
-      - key: DB_CONNECTION
-        value: mysql
-      - key: DB_HOST
-        sync: false
-      - key: DB_PORT
-        value: 3306
-      - key: DB_DATABASE
-        sync: false
-      - key: DB_USERNAME
-        sync: false
-      - key: DB_PASSWORD
-        sync: false
-      # Set your Laravel key in Render Dashboard
-      - key: APP_KEY
-        sync: false
-    # Optional: increase start timeout for composer optimize/migrations
-    numInstances: 1
-    region: oregon
+    # Render will detect and build from Dockerfile
+    # Set environment variables in the dashboard or via env groups
+
+# Optional worker example (uncomment to use)
+#  - type: worker
+#    name: laravel-worker
+#    env: docker
+#    autoDeploy: true
+#    dockerfilePath: ./Dockerfile
+#    # Override start command if needed via a different entrypoint image,
+#    # or keep the same image and run queue:work in a separate Dockerfile or CMD.
+#    # On Render, workers often use native 'Start Command'. With Docker, you can
+#    # create a small worker Dockerfile if you prefer.
+
+# Optional cron job example (use Render Cron Jobs UI):
+#   Command: php /app/artisan schedule:run
+#   Schedule: every minute
+
 
