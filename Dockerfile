@@ -10,7 +10,7 @@ FROM composer:2 AS vendor
 WORKDIR /app
 
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --prefer-dist --no-progress --no-interaction
+RUN composer install --no-dev --prefer-dist --no-progress --no-interaction --no-scripts --ignore-platform-reqs
 
 # copy full app (for optimized autoload)
 COPY . .
