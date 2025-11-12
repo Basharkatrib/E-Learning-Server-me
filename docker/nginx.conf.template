@@ -9,6 +9,11 @@ server {
 		try_files $uri $uri/ /index.php?$query_string;
 	}
 
+	# Ensure Livewire endpoints & assets are handled by Laravel, not static
+	location ^~ /livewire/ {
+		try_files $uri $uri/ /index.php?$query_string;
+	}
+
 	location ~ \.php$ {
 		include        fastcgi_params;
 		fastcgi_param  SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
